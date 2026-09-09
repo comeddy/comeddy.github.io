@@ -34,18 +34,6 @@
   --sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,system-ui,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#14130F; --surface:#1C1B18; --sunken:#211F1B;
-    --text:#EDEBE4; --text-2:#C4BFB2; --text-3:#A9A396;
-    --line:#2E2C27; --line-2:#3A3833;
-    --accent:#E8834A; --accent-hover:#F09A66; --accent-ink:#EFA478;
-    --accent-50:#241B15; --accent-100:#33241B; --accent-200:#4A3325;
-    --teal:#59C8C4; --green:#A6C55E; --slate:#9FB2D2;
-    --btn-bg:#E8834A; --btn-bg-h:#F09A66; --btn-fg:#14130F;
-    --shadow-card:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.34);
-  }
-}
 :root[data-theme="dark"]{
   --bg:#14130F; --surface:#1C1B18; --sunken:#211F1B;
   --text:#EDEBE4; --text-2:#C4BFB2; --text-3:#A9A396;
@@ -108,10 +96,6 @@ a.btn-primary{border:1px solid var(--btn-bg)}
 .theme-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .theme-toggle svg{width:18px;height:18px;display:block}
 .theme-toggle .ic-sun{display:none}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]) .theme-toggle .ic-sun{display:block}
-  :root:not([data-theme="light"]) .theme-toggle .ic-moon{display:none}
-}
 :root[data-theme="dark"] .theme-toggle .ic-sun{display:block}
 :root[data-theme="dark"] .theme-toggle .ic-moon{display:none}
 
@@ -911,15 +895,11 @@ codex        <span class="c"># 실행 후 /status 로 공급자 확인</span></c
     }
   }catch(e){}
 
-  // light/dark toggle — flips the effective theme (system preference or saved choice) and persists it
+  // light/dark toggle — light is the default; a saved choice overrides it
   (function(){
     var root=document.documentElement, btn=document.getElementById('theme-toggle');
     if(!btn) return;
-    function effective(){
-      var t=root.getAttribute('data-theme');
-      if(t==='dark'||t==='light') return t;
-      try{ return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }catch(e){ return 'light'; }
-    }
+    function effective(){ return root.getAttribute('data-theme')==='dark' ? 'dark' : 'light'; }
     function label(){
       var next = effective()==='dark' ? '라이트 모드로 전환' : '다크 모드로 전환';
       btn.setAttribute('aria-label',next); btn.setAttribute('title',next);
@@ -930,7 +910,6 @@ codex        <span class="c"># 실행 후 /status 로 공급자 확인</span></c
       try{ localStorage.setItem('theme',next); }catch(e){}
       label();
     });
-    try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',label); }catch(e){}
     label();
   })();
 
