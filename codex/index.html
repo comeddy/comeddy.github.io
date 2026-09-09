@@ -7,7 +7,7 @@
 <script>
 (function(){try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();
 </script>
-<meta name="description" content="Codex CLI의 추론을 Amazon Bedrock의 GPT-6 Astra로 보내는 설정 가이드 — config.toml 두 줄, AWS 프로파일 하나.">
+<meta name="description" content="Codex CLI의 추론을 Amazon Bedrock의 GPT-6 Astra로 보내는 설정 가이드 — 설정 파일 하나, AWS 프로파일 하나.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -366,14 +366,14 @@ html{scroll-behavior:smooth}
     <div class="eyebrow">Amazon Bedrock × OpenAI Codex</div>
     <h1>Codex는 그대로,<br>추론만 <em>우리 AWS 계정</em>으로.</h1>
     <p class="hero-sub">
-      <code style="font-family:var(--mono);font-size:.92em">config.toml</code> 두 줄과 AWS 프로파일 하나면
+      설정 파일 하나(<code style="font-family:var(--mono);font-size:.92em">config.toml</code>)와 AWS 프로파일 하나면
       Codex CLI의 모든 요청이 Amazon Bedrock의 GPT-6 Astra로 갑니다.
       OpenAI 계정 로그인도, 개발자별 좌석 라이선스도 필요 없습니다.
       경로는 <a href="#paths">Mantle과 Bedrock Runtime 두 가지</a>이고,
       클라우드에 의존하는 기능은 어느 쪽에서도 빠집니다 — <a href="#scope">지원 범위</a>를 먼저 확인하세요.
     </p>
     <div class="chips">
-      <div class="chip"><span class="k">2줄</span><span class="v">config.toml 변경</span></div>
+      <div class="chip"><span class="k">1개</span><span class="v">설정 파일 · config.toml</span></div>
       <div class="chip"><span class="k">2경로</span><span class="v">Mantle · Bedrock Runtime</span></div>
       <div class="chip"><span class="k">100만</span><span class="v">입력 토큰 컨텍스트</span></div>
       <div class="chip"><span class="k">6종</span><span class="v">Mantle 모델 카탈로그</span></div>
@@ -436,7 +436,7 @@ html{scroll-behavior:smooth}
       <div class="sec-kicker">설정 · 공통</div>
       <h2>설치와 자격증명은 경로와 무관합니다</h2>
       <p>먼저 이 두 단계를 끝내 두면, 남는 일은 <a href="#paths">경로 하나를 골라</a>
-      <code style="font-family:var(--mono);font-size:.8em">config.toml</code>에 두 줄 적는 것뿐입니다.</p>
+      <code style="font-family:var(--mono);font-size:.8em">config.toml</code> 설정 파일 하나를 채우는 것뿐입니다.</p>
     </div>
 
     <div class="steps steps-2">
