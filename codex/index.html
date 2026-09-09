@@ -161,6 +161,8 @@ section{padding:74px 0;border-bottom:1px solid var(--line)}
 .code .c{color:#9A968B}
 .code .s{color:#E9A178}
 .code .k{color:#8FC7C4}
+.code .n{color:#C9B8F0}
+.code .t{color:#F2D28B}
 .copy{position:absolute;top:8px;right:8px;background:#2B2A26;color:#D8D4C8;border:1px solid #423F39;
   border-radius:7px;font-family:var(--sans);font-size:11.5px;min-height:36px;padding:6px 13px;cursor:pointer}
 .copy:hover{background:#3A3833;color:#fff}
@@ -498,10 +500,22 @@ export AWS_REGION=us-west-2</code></pre>
           <p>Bedrock의 Mantle 엔드포인트로 붙습니다. 모델 ID에 크로스 리전 접두사가 없어,
           요청을 보낸 리전에서 추론이 처리됩니다.</p>
         </div>
-        <pre class="code"><button class="copy" type="button" data-copy='model_provider = "amazon-bedrock"
-model = "openai.gpt-6-astra"'>복사</button><code><span class="c"># ~/.codex/config.toml</span>
+        <pre class="code"><button class="copy" type="button" data-copy='model = "openai.gpt-6-astra"
+model_provider = "amazon-bedrock"
+openai_base_url = "https://bedrock-mantle.us-west-2.api.aws/openai/v1"
+model_reasoning_effort = "max"
+model_context_window = 1048576
+
+[model_providers.amazon-bedrock.aws]
+region = "us-west-2"'>복사</button><code><span class="c"># ~/.codex/config.toml</span>
+<span class="k">model</span> = <span class="s">"openai.gpt-6-astra"</span>
 <span class="k">model_provider</span> = <span class="s">"amazon-bedrock"</span>
-<span class="k">model</span> = <span class="s">"openai.gpt-6-astra"</span></code></pre>
+<span class="k">openai_base_url</span> = <span class="s">"https://bedrock-mantle.us-west-2.api.aws/openai/v1"</span>
+<span class="k">model_reasoning_effort</span> = <span class="s">"max"</span>
+<span class="k">model_context_window</span> = <span class="n">1048576</span>
+
+<span class="t">[model_providers.amazon-bedrock.aws]</span>
+<span class="k">region</span> = <span class="s">"us-west-2"</span></code></pre>
         <p class="ep"><b>/status 엔드포인트</b><br>https://bedrock-mantle.us-west-2.api.aws/openai/v1</p>
         <ul>
           <li>접두사 없는 리전 모델 ID — <span style="font-family:var(--mono);font-size:12.5px">openai.gpt-6-astra</span></li>
@@ -524,10 +538,22 @@ model = "openai.gpt-6-astra"'>복사</button><code><span class="c"># ~/.codex/co
           모델 ID에 <span style="font-family:var(--mono);font-size:12.5px">global.</span> ·
           <span style="font-family:var(--mono);font-size:12.5px">us.</span> 접두사를 붙여 라우팅 범위를 고릅니다.</p>
         </div>
-        <pre class="code"><button class="copy" type="button" data-copy='model_provider = "amazon-bedrock-runtime"
-model = "global.openai.gpt-6-astra"'>복사</button><code><span class="c"># ~/.codex/config.toml</span>
+        <pre class="code"><button class="copy" type="button" data-copy='model = "global.openai.gpt-6-astra"
+model_provider = "amazon-bedrock-runtime"
+openai_base_url = "https://bedrock-runtime.us-west-2.amazonaws.com/openai/v1"
+model_reasoning_effort = "max"
+model_context_window = 1048576
+
+[model_providers.amazon-bedrock-runtime.aws]
+region = "us-west-2"'>복사</button><code><span class="c"># ~/.codex/config.toml</span>
+<span class="k">model</span> = <span class="s">"global.openai.gpt-6-astra"</span>
 <span class="k">model_provider</span> = <span class="s">"amazon-bedrock-runtime"</span>
-<span class="k">model</span> = <span class="s">"global.openai.gpt-6-astra"</span></code></pre>
+<span class="k">openai_base_url</span> = <span class="s">"https://bedrock-runtime.us-west-2.amazonaws.com/openai/v1"</span>
+<span class="k">model_reasoning_effort</span> = <span class="s">"max"</span>
+<span class="k">model_context_window</span> = <span class="n">1048576</span>
+
+<span class="t">[model_providers.amazon-bedrock-runtime.aws]</span>
+<span class="k">region</span> = <span class="s">"us-west-2"</span></code></pre>
         <p class="ep"><b>/status 엔드포인트</b><br>https://bedrock-runtime.us-west-2.amazonaws.com/openai/v1</p>
         <ul>
           <li>라우트 접두사가 추론 리전을 결정 — <span style="font-family:var(--mono);font-size:12.5px">global.</span>은 전 세계 상업 리전, <span style="font-family:var(--mono);font-size:12.5px">us.</span>는 미국 지역</li>
