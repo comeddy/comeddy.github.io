@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title description" font-family="Apple SD Gothic Neo, Noto Sans CJK KR, Noto Sans KR, AppleGothic, sans-serif" fill="#15283a">
+  <title id="title">한 바퀴를 12칸으로, 한 칸은 가장 가까운 거리</title>
+  <desc id="description">각도는 +X 전방에서 반시계 방향. 0번은 [0,30)도, 11번은 [330,360)도로 두 구역 모두 전방 정지 검사에 사용한다. 360도는 0도로 돌아온다. 유효한 한 구역 안에서는 최소 거리를 선택하며, 미터로 저장한다. 모델 입력만 clip(거리,0,3.5)/3.5로 정규화한다. 오른쪽 벽의 예시는 같은 구역의 1.5, 약 1.6, 약 1.7 m를 1.5 m로 요약한다.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#075bcb" />
+    </marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#086f73" />
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#a3480c" />
+    </marker>
+    <marker id="arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#526b80" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="760" rx="0" fill="#ffffff" stroke="none" />
+  <text id="text-1" x="44" y="44" font-size="24" fill="#075bcb" text-anchor="start" font-weight="700">거리 센서 읽기</text>
+  <text id="text-2" x="44" y="100" font-size="42" fill="#15283a" text-anchor="start" font-weight="700">한 바퀴를 12칸으로, 한 칸은 가장 가까운 거리</text>
+  <text id="text-3" x="44" y="140" font-size="26" fill="#526b80" text-anchor="start" font-weight="500">전방은 +X · 0 rad, 각도는 위에서 볼 때 반시계(CCW)로 증가합니다</text>
+  <rect x="44" y="178" width="532" height="510" rx="18" fill="#f1f7fe" stroke="#d7e4ef" />
+  <path d="M 292 418 L 460.0000 418.0000 A 168 168 0 0 0 437.4923 334.0000 Z" fill="#e8f6f4" stroke="#086f73" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sector-0" data-sector="0" data-start-deg="0" data-end-deg="30" />
+  <text id="text-4" x="419.502" y="393.836" font-size="30" fill="#086f73" text-anchor="middle" font-weight="700">0</text>
+  <path d="M 292 418 L 437.4923 334.0000 A 168 168 0 0 0 376.0000 272.5077 Z" fill="#ffffff" stroke="#d7e4ef" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sector-1" data-sector="1" data-start-deg="30" data-end-deg="60" />
+  <text id="text-5" x="385.338" y="334.662" font-size="30" fill="#526b80" text-anchor="middle" font-weight="700">1</text>
+  <path d="M 292 418 L 376.0000 272.5077 A 168 168 0 0 0 292.0000 250.0000 Z" fill="#ffffff" stroke="#d7e4ef" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sector-2" data-sector="2" data-start-deg="60" data-end-deg="90" />
+  <text id="text-6" x="326.164" y="300.498" font-size="30" fill="#526b80" text-anchor="middle" font-weight="700">2</text>
+  <path d="M 292 418 L 292.0000 250.0000 A 168 168 0 0 0 208.0000 272.5077 Z" fill="#ffffff" stroke="#d7e4ef" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sector-3" data-sector="3" data-start-deg="90" data-end-deg="120" />
+  <text id="text-7" x="257.836" y="300.498" font-size="30" fill="#526b80" text-anchor="middle" font-weight="700">3</text>
+  <path d="M 292 418 L 208.0000 272.5077 A 168 168 0 0 0 146.5077 334.0000 Z" fill="#ffffff" stroke="#d7e4ef" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sector-4" data-sector="4" data-start-deg="120" data-end-deg="150" />
+  <text id="text-8" x="198.662" y="334.662" font-size="30" fill="#526b80" text-anchor="middle" font-weight="700">4</text>
+  <path d="M 292 418 L 146.5077 334.0000 A 168 168 0 0 0 124.0000 418.0000 Z" fill="#ffffff" stroke="#d7e4ef" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sector-5" data-sector="5" data-start-deg="150" data-end-deg="180" />
+  <text id="text-9" x="164.498" y="393.836" font-size="30" fill="#526b80" text-anchor="middle" font-weight="700">5</text>
+  <path d="M 292 418 L 124.0000 418.0000 A 168 168 0 0 0 146.5077 502.0000 Z" fill="#ffffff" stroke="#d7e4ef" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sector-6" data-sector="6" data-start-deg="180" data-end-deg="210" />
+  <text id="text-10" x="164.498" y="462.164" font-size="30" fill="#526b80" text-anchor="middle" font-weight="700">6</text>
+  <path d="M 292 418 L 146.5077 502.0000 A 168 168 0 0 0 208.0000 563.4923 Z" fill="#ffffff" stroke="#d7e4ef" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sector-7" data-sector="7" data-start-deg="210" data-end-deg="240" />
+  <text id="text-11" x="198.662" y="521.338" font-size="30" fill="#526b80" text-anchor="middle" font-weight="700">7</text>
+  <path d="M 292 418 L 208.0000 563.4923 A 168 168 0 0 0 292.0000 586.0000 Z" fill="#ffffff" stroke="#d7e4ef" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sector-8" data-sector="8" data-start-deg="240" data-end-deg="270" />
+  <text id="text-12" x="257.836" y="555.502" font-size="30" fill="#526b80" text-anchor="middle" font-weight="700">8</text>
+  <path d="M 292 418 L 292.0000 586.0000 A 168 168 0 0 0 376.0000 563.4923 Z" fill="#ffffff" stroke="#d7e4ef" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sector-9" data-sector="9" data-start-deg="270" data-end-deg="300" />
+  <text id="text-13" x="326.164" y="555.502" font-size="30" fill="#526b80" text-anchor="middle" font-weight="700">9</text>
+  <path d="M 292 418 L 376.0000 563.4923 A 168 168 0 0 0 437.4923 502.0000 Z" fill="#ffffff" stroke="#d7e4ef" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sector-10" data-sector="10" data-start-deg="300" data-end-deg="330" />
+  <text id="text-14" x="385.338" y="521.338" font-size="30" fill="#526b80" text-anchor="middle" font-weight="700">10</text>
+  <path d="M 292 418 L 437.4923 502.0000 A 168 168 0 0 0 460.0000 418.0000 Z" fill="#e8f6f4" stroke="#086f73" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="sector-11" data-sector="11" data-start-deg="330" data-end-deg="360" />
+  <text id="text-15" x="419.502" y="462.164" font-size="30" fill="#086f73" text-anchor="middle" font-weight="700">11</text>
+  <path d="M 351 418 H 548" fill="none" stroke="#075bcb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)" />
+  <text id="text-16" x="516" y="452" font-size="26" fill="#075bcb" text-anchor="middle" font-weight="700">+X</text>
+  <text id="text-17" x="516" y="484" font-size="24" fill="#075bcb" text-anchor="middle" font-weight="500">0 rad</text>
+  <path d="M 292 351 V 225" fill="none" stroke="#526b80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-muted)" />
+  <text id="text-18" x="292" y="212" font-size="24" fill="#526b80" text-anchor="middle" font-weight="500">+Y · 왼쪽</text>
+  <text id="text-19" x="89" y="429" font-size="24" fill="#526b80" text-anchor="middle" font-weight="500">180°</text>
+  <text id="text-20" x="292" y="624" font-size="24" fill="#526b80" text-anchor="middle" font-weight="500">270°</text>
+  <path d="M 478.999 349.938 A 199 199 0 0 0 363.315 232.217" fill="none" stroke="#086f73" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-teal)" />
+  <text id="text-21" x="486" y="260" font-size="24" fill="#086f73" text-anchor="middle" font-weight="700">CCW</text>
+  <circle cx="292" cy="418" r="52" fill="#ffffff" stroke="#d7e4ef" stroke-width="2" />
+  <g transform="translate(299.7 418) scale(1.1)">
+    <rect x="-18" y="-33" width="32" height="12" rx="4" fill="#15283a" />
+    <line x1="-10" y1="-31" x2="-10" y2="-23" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="0" y1="-31" x2="0" y2="-23" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="10" y1="-31" x2="10" y2="-23" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <rect x="-18" y="21" width="32" height="12" rx="4" fill="#15283a" />
+    <line x1="-10" y1="23" x2="-10" y2="31" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="0" y1="23" x2="0" y2="31" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="10" y1="23" x2="10" y2="31" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <rect x="-29" y="-22" width="58" height="44" rx="14" fill="#ffffff" stroke="#075bcb" stroke-width="3" />
+    <circle cx="-7" cy="0" r="14" fill="#e8f6f4" stroke="#086f73" stroke-width="3" />
+    <circle cx="-7" cy="0" r="5" fill="#086f73" />
+    <path d="M 13 -7 L 22 0 L 13 7" fill="none" stroke="#075bcb" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
+  </g>
+  <text id="text-22" x="310" y="667" font-size="28" fill="#086f73" text-anchor="middle" font-weight="700">전방 = 11번과 0번</text>
+  <rect x="600" y="178" width="556" height="161" rx="18" fill="#e8f6f4" stroke="#d7e4ef" />
+  <text id="text-23" x="624" y="217" font-size="28" fill="#15283a" text-anchor="start" font-weight="700">전방은 두 구역의 경계</text>
+  <text id="text-24" x="632" y="265" font-size="28" fill="#086f73" text-anchor="start" font-weight="700">0번  ·  [0°, 30°)</text>
+  <text id="text-25" x="632" y="308" font-size="28" fill="#086f73" text-anchor="start" font-weight="700">11번 ·  [330°, 360°)</text>
+  <text id="text-26" x="1118" y="272" font-size="24" fill="#526b80" text-anchor="end" font-weight="500">360°</text>
+  <text id="text-27" x="1118" y="308" font-size="24" fill="#526b80" text-anchor="end" font-weight="500">= 0°</text>
+  <rect x="600" y="355" width="556" height="211" rx="18" fill="#f1f7fe" stroke="#d7e4ef" />
+  <text id="text-28" x="624" y="393" font-size="28" fill="#15283a" text-anchor="start" font-weight="700">구역 안의 거리 → 최솟값</text>
+  <rect x="791" y="443" width="10" height="106" rx="3" fill="#a3480c" stroke="none" />
+  <text id="text-29" x="796" y="428" font-size="24" fill="#a3480c" text-anchor="middle" font-weight="500">벽</text>
+  <line x1="641" y1="536" x2="791" y2="456.2435852507782" stroke="#086f73" stroke-width="3" stroke-linecap="round" />
+  <circle cx="791" cy="456.2435852507782" r="4" fill="#a3480c" stroke="none" />
+  <text id="text-30" x="817" y="464.2435852507782" font-size="24" fill="#526b80" text-anchor="start" font-weight="500">1.7 m</text>
+  <line x1="641" y1="536" x2="791" y2="481.40446486006965" stroke="#086f73" stroke-width="3" stroke-linecap="round" />
+  <circle cx="791" cy="481.40446486006965" r="4" fill="#a3480c" stroke="none" />
+  <text id="text-31" x="817" y="489.40446486006965" font-size="24" fill="#526b80" text-anchor="start" font-weight="500">1.6 m</text>
+  <line x1="641" y1="536" x2="791" y2="536.0" stroke="#086f73" stroke-width="3" stroke-linecap="round" />
+  <circle cx="791" cy="536.0" r="4" fill="#a3480c" stroke="none" />
+  <text id="text-32" x="817" y="544.0" font-size="24" fill="#526b80" text-anchor="start" font-weight="500">1.5 m</text>
+  <circle cx="641" cy="536" r="7" fill="#086f73" stroke="none" />
+  <path d="M 902 504 H 945" fill="none" stroke="#075bcb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)" />
+  <text id="text-33" x="1050" y="507" font-size="40" fill="#075bcb" text-anchor="middle" font-weight="700">1.5 m</text>
+  <text id="text-34" x="1050" y="544" font-size="24" fill="#15283a" text-anchor="middle" font-weight="500">대표 거리</text>
+  <rect x="600" y="584" width="556" height="104" rx="18" fill="#e8f6f4" stroke="#d7e4ef" />
+  <text id="text-35" x="624" y="621" font-size="26" fill="#15283a" text-anchor="start" font-weight="700">정규화 = clip(거리, 0, 3.5) ÷ 3.5</text>
+  <text id="text-36" x="624" y="661" font-size="24" fill="#086f73" text-anchor="start" font-weight="500">1.5 m → 약 0.43  ·  모델 입력은 0~1</text>
+  <text id="text-37" x="44" y="730" font-size="24" fill="#526b80" text-anchor="start" font-weight="500">거리는 m로 저장합니다. 무효·누락 구역은 0으로 처리하고 정지합니다.</text>
+</svg>

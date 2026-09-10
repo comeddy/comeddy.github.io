@@ -1,0 +1,449 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Physical AI workshop GPU host in an existing public VPC/subnet. Creates only its own security group, EC2, IAM and private results bucket. Existing network resources are never managed or deleted by this stack.",
+  "Metadata": {
+    "AWS::CloudFormation::Interface": {
+      "ParameterGroups": [
+        {
+          "Label": {
+            "default": "Customer account and regional resources"
+          },
+          "Parameters": [
+            "AmiId",
+            "KeyName",
+            "SshCidr",
+            "AvailabilityZone",
+            "RootDeviceName",
+            "InstanceType"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Existing public network (not owned by this stack)"
+          },
+          "Parameters": [
+            "ExistingVpcId",
+            "ExistingSubnetId"
+          ]
+        }
+      ]
+    },
+    "SourceTemplateSha256": "e1d74a89c11e584ca5be31c5152bd989518fc69699e7fa9822ec6fee3bf8011d"
+  },
+  "Parameters": {
+    "AmiId": {
+      "Type": "AWS::EC2::Image::Id",
+      "Description": "Supply a trusted Ubuntu Server 22.04 LTS amd64 HVM EBS AMI in this region. Use a fresh image without preinstalled GPU drivers. No default AMI."
+    },
+    "KeyName": {
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Description": "Existing EC2 SSH key pair in the deployment region."
+    },
+    "SshCidr": {
+      "Type": "String",
+      "Description": "Your current public IPv4 address followed by /32. Only SSH is allowed.",
+      "AllowedPattern": "^(?:(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})\\.){3}(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})/32$",
+      "ConstraintDescription": "Enter one IPv4 host, for example 203.0.113.10/32."
+    },
+    "InstanceType": {
+      "Type": "String",
+      "Default": "g6.4xlarge",
+      "AllowedValues": [
+        "g6.4xlarge",
+        "g6e.2xlarge"
+      ],
+      "Description": "g6.4xlarge (default): 16 vCPUs, 64 GiB RAM, one NVIDIA L4 with 24 GB VRAM. g6e.2xlarge (explicit alternative): 8 vCPUs, 64 GiB RAM, one NVIDIA L40S with 45776 MiB GPU memory reported by EC2. Verify regional pricing first."
+    },
+    "AvailabilityZone": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Optional regional AZ offering the selected instance type; deploy.sh selects an offering."
+    },
+    "RootDeviceName": {
+      "Type": "String",
+      "Default": "/dev/sda1",
+      "AllowedValues": [
+        "/dev/sda1",
+        "/dev/xvda"
+      ],
+      "Description": "Must match the selected AMI root device. deploy.sh reads this from EC2."
+    },
+    "ExistingVpcId": {
+      "Type": "AWS::EC2::VPC::Id"
+    },
+    "ExistingSubnetId": {
+      "Type": "AWS::EC2::Subnet::Id"
+    }
+  },
+  "Conditions": {
+    "HasAvailabilityZone": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AvailabilityZone"
+            },
+            ""
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "WorkshopSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "SSH from a single participant IPv4; no GUI or streaming ingress.",
+        "VpcId": {
+          "Ref": "ExistingVpcId"
+        },
+        "SecurityGroupIngress": [
+          {
+            "Description": "Participant SSH and optional local TCP tunnel",
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": {
+              "Ref": "SshCidr"
+            }
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "Description": "HTTPS for SSM, NVIDIA containers, assets and package repositories",
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "Description": "Ubuntu package mirrors and image layer download redirects",
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": "${AWS::StackName}-ssh"
+            }
+          },
+          {
+            "Key": "Workshop",
+            "Value": "physical-ai-isaac-aws"
+          }
+        ]
+      }
+    },
+    "ResultsBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Id": "AbortIncompleteUploads",
+              "Status": "Enabled",
+              "AbortIncompleteMultipartUpload": {
+                "DaysAfterInitiation": 1
+              }
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Workshop",
+            "Value": "physical-ai-isaac-aws"
+          }
+        ]
+      }
+    },
+    "ResultsBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ResultsBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "DenyUnencryptedTransport",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "s3:*",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ResultsBucket",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${ResultsBucket.Arn}/*"
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "WorkshopRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+          }
+        ],
+        "Policies": [
+          {
+            "PolicyName": "WorkshopResultsOnly",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "ListWorkshopBucket",
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:ListBucket",
+                    "s3:GetBucketLocation",
+                    "s3:ListBucketMultipartUploads"
+                  ],
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "ResultsBucket",
+                      "Arn"
+                    ]
+                  }
+                },
+                {
+                  "Sid": "ReadWriteWorkshopObjects",
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:AbortMultipartUpload",
+                    "s3:ListMultipartUploadParts"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "${ResultsBucket.Arn}/*"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Workshop",
+            "Value": "physical-ai-isaac-aws"
+          }
+        ]
+      }
+    },
+    "WorkshopInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Roles": [
+          {
+            "Ref": "WorkshopRole"
+          }
+        ]
+      }
+    },
+    "WorkshopLaunchTemplate": {
+      "Type": "AWS::EC2::LaunchTemplate",
+      "Properties": {
+        "LaunchTemplateData": {
+          "MetadataOptions": {
+            "HttpEndpoint": "enabled",
+            "HttpTokens": "required",
+            "HttpPutResponseHopLimit": 1,
+            "InstanceMetadataTags": "disabled"
+          }
+        },
+        "TagSpecifications": [
+          {
+            "ResourceType": "launch-template",
+            "Tags": [
+              {
+                "Key": "Workshop",
+                "Value": "physical-ai-isaac-aws"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "WorkshopInstance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": {
+          "Ref": "AmiId"
+        },
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "LaunchTemplate": {
+          "LaunchTemplateId": {
+            "Ref": "WorkshopLaunchTemplate"
+          },
+          "Version": {
+            "Fn::GetAtt": [
+              "WorkshopLaunchTemplate",
+              "LatestVersionNumber"
+            ]
+          }
+        },
+        "IamInstanceProfile": {
+          "Ref": "WorkshopInstanceProfile"
+        },
+        "NetworkInterfaces": [
+          {
+            "DeviceIndex": "0",
+            "AssociatePublicIpAddress": true,
+            "DeleteOnTermination": true,
+            "SubnetId": {
+              "Ref": "ExistingSubnetId"
+            },
+            "GroupSet": [
+              {
+                "Ref": "WorkshopSecurityGroup"
+              }
+            ]
+          }
+        ],
+        "PropagateTagsToVolumeOnCreation": true,
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": {
+              "Ref": "RootDeviceName"
+            },
+            "Ebs": {
+              "Encrypted": true,
+              "VolumeType": "gp3",
+              "VolumeSize": 200,
+              "DeleteOnTermination": true
+            }
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Sub": "#!/bin/bash\nset -euo pipefail\nexec > >(tee -a /var/log/isaac-workshop-init.log) 2>&1\nsource /etc/os-release\ntest \"$ID\" = ubuntu\ntest \"$VERSION_ID\" = 22.04\ntest \"$(uname -m)\" = x86_64\nexport DEBIAN_FRONTEND=noninteractive\napt-get -o DPkg::Lock::Timeout=300 update\napt-get -o DPkg::Lock::Timeout=300 install -y ca-certificates curl snapd\nif systemctl cat amazon-ssm-agent.service >/dev/null 2>&1; then\n  systemctl enable --now amazon-ssm-agent\nelse\n  snap list amazon-ssm-agent >/dev/null 2>&1 || snap install amazon-ssm-agent --classic\n  systemctl enable --now snap.amazon-ssm-agent.amazon-ssm-agent.service\nfi\nprintf '%s\\n' \\\n  'AWS_DEFAULT_REGION=${AWS::Region}' \\\n  'RESULTS_BUCKET=${ResultsBucket}' \\\n  'ISAAC_VERSION=5.1.0' \\\n  'ISAAC_ROBOT=turtlebot3_burger' \\\n  > /etc/isaac-workshop.env\nchmod 644 /etc/isaac-workshop.env\ntouch /var/lib/isaac-workshop-host-init.done\necho \"Base host ready. Copy the repository, then run bootstrap-host.sh install.\"\n"
+          }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": "${AWS::StackName}-isaac"
+            }
+          },
+          {
+            "Key": "Workshop",
+            "Value": "physical-ai-isaac-aws"
+          }
+        ],
+        "AvailabilityZone": {
+          "Fn::If": [
+            "HasAvailabilityZone",
+            {
+              "Ref": "AvailabilityZone"
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "InstanceId": {
+      "Description": "GPU instance. Stack completion does not verify GPU or Isaac Sim readiness.",
+      "Value": {
+        "Ref": "WorkshopInstance"
+      }
+    },
+    "PublicIp": {
+      "Description": "Initial IP only. After stop/start use EC2 DescribeInstances with InstanceId.",
+      "Value": {
+        "Fn::GetAtt": [
+          "WorkshopInstance",
+          "PublicIp"
+        ]
+      }
+    },
+    "ResultsBucketName": {
+      "Description": "Private encrypted bucket. Empty this bucket before stack deletion.",
+      "Value": {
+        "Ref": "ResultsBucket"
+      }
+    },
+    "SshCommand": {
+      "Description": "Initial command. Replace PEM path and refresh the EC2 IP after stop/start.",
+      "Value": {
+        "Fn::Sub": "ssh -i /path/to/key.pem ubuntu@${WorkshopInstance.PublicIp}"
+      }
+    },
+    "SsmCommand": {
+      "Description": "Requires caller permissions, SSM agent readiness and the Session Manager plugin.",
+      "Value": {
+        "Fn::Sub": "aws ssm start-session --region ${AWS::Region} --target ${WorkshopInstance}"
+      }
+    },
+    "PreviewTunnelCommand": {
+      "Description": "Initial command. Refresh EC2 IP after stop/start; run serve-preview.sh first.",
+      "Value": {
+        "Fn::Sub": "ssh -N -L 127.0.0.1:8000:127.0.0.1:8000 -i /path/to/key.pem ubuntu@${WorkshopInstance.PublicIp}"
+      }
+    }
+  }
+}

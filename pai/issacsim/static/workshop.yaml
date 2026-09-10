@@ -1,0 +1,332 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  BYOA Korean Physical AI workshop. One Ubuntu 22.04 x86_64 GPU host for
+  Isaac Sim 5.1.0 headless standalone Python. No streaming ports.
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Customer account and regional resources
+        Parameters:
+          - AmiId
+          - KeyName
+          - SshCidr
+          - AvailabilityZone
+          - RootDeviceName
+          - InstanceType
+
+Parameters:
+  AmiId:
+    Type: AWS::EC2::Image::Id
+    Description: >-
+      Supply a trusted Ubuntu Server 22.04 LTS amd64 HVM EBS AMI in this region.
+      Use a fresh image without preinstalled GPU drivers. No default AMI.
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Existing EC2 SSH key pair in the deployment region.
+  SshCidr:
+    Type: String
+    Description: Your current public IPv4 address followed by /32. Only SSH is allowed.
+    AllowedPattern: '^(?:(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})\.){3}(?:25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})/32$'
+    ConstraintDescription: Enter one IPv4 host, for example 203.0.113.10/32.
+  InstanceType:
+    Type: String
+    Default: g6.4xlarge
+    AllowedValues:
+      - g6.4xlarge
+      - g6e.2xlarge
+    Description: >-
+      g6.4xlarge (default): 16 vCPUs, 64 GiB RAM, one NVIDIA L4 with 24 GB VRAM.
+      g6e.2xlarge (explicit alternative): 8 vCPUs, 64 GiB RAM, one NVIDIA L40S
+      with 45776 MiB GPU memory reported by EC2. Verify regional pricing first.
+  AvailabilityZone:
+    Type: String
+    Default: ''
+    Description: Optional regional AZ offering the selected instance type; deploy.sh selects an offering.
+  RootDeviceName:
+    Type: String
+    Default: /dev/sda1
+    AllowedValues:
+      - /dev/sda1
+      - /dev/xvda
+    Description: Must match the selected AMI root device. deploy.sh reads this from EC2.
+
+Conditions:
+  HasAvailabilityZone: !Not [!Equals [!Ref AvailabilityZone, '']]
+
+Resources:
+  WorkshopVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.42.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-vpc'
+        - Key: Workshop
+          Value: physical-ai-isaac-aws
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-igw'
+        - Key: Workshop
+          Value: physical-ai-isaac-aws
+
+  GatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref WorkshopVpc
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref WorkshopVpc
+      CidrBlock: 10.42.1.0/24
+      AvailabilityZone: !If [HasAvailabilityZone, !Ref AvailabilityZone, !Ref 'AWS::NoValue']
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-public'
+        - Key: Workshop
+          Value: physical-ai-isaac-aws
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref WorkshopVpc
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-public'
+        - Key: Workshop
+          Value: physical-ai-isaac-aws
+
+  InternetRoute:
+    Type: AWS::EC2::Route
+    DependsOn: GatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  SubnetRouteAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet
+
+  WorkshopSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SSH from a single participant IPv4; no GUI or streaming ingress.
+      VpcId: !Ref WorkshopVpc
+      SecurityGroupIngress:
+        - Description: Participant SSH and optional local TCP tunnel
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref SshCidr
+      SecurityGroupEgress:
+        - Description: HTTPS for SSM, NVIDIA containers, assets and package repositories
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - Description: Ubuntu package mirrors and image layer download redirects
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-ssh'
+        - Key: Workshop
+          Value: physical-ai-isaac-aws
+
+  ResultsBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: AbortIncompleteUploads
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
+      Tags:
+        - Key: Workshop
+          Value: physical-ai-isaac-aws
+
+  ResultsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ResultsBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyUnencryptedTransport
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource:
+              - !GetAtt ResultsBucket.Arn
+              - !Sub '${ResultsBucket.Arn}/*'
+            Condition:
+              Bool:
+                aws:SecureTransport: 'false'
+
+  WorkshopRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore'
+      Policies:
+        - PolicyName: WorkshopResultsOnly
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ListWorkshopBucket
+                Effect: Allow
+                Action:
+                  - s3:ListBucket
+                  - s3:GetBucketLocation
+                  - s3:ListBucketMultipartUploads
+                Resource: !GetAtt ResultsBucket.Arn
+              - Sid: ReadWriteWorkshopObjects
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:AbortMultipartUpload
+                  - s3:ListMultipartUploadParts
+                Resource: !Sub '${ResultsBucket.Arn}/*'
+      Tags:
+        - Key: Workshop
+          Value: physical-ai-isaac-aws
+
+  WorkshopInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref WorkshopRole
+
+  WorkshopLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        MetadataOptions:
+          HttpEndpoint: enabled
+          HttpTokens: required
+          HttpPutResponseHopLimit: 1
+          InstanceMetadataTags: disabled
+      TagSpecifications:
+        - ResourceType: launch-template
+          Tags:
+            - Key: Workshop
+              Value: physical-ai-isaac-aws
+
+  WorkshopInstance:
+    Type: AWS::EC2::Instance
+    DependsOn:
+      - InternetRoute
+      - SubnetRouteAssociation
+    Properties:
+      ImageId: !Ref AmiId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      LaunchTemplate:
+        LaunchTemplateId: !Ref WorkshopLaunchTemplate
+        Version: !GetAtt WorkshopLaunchTemplate.LatestVersionNumber
+      IamInstanceProfile: !Ref WorkshopInstanceProfile
+      NetworkInterfaces:
+        - DeviceIndex: '0'
+          AssociatePublicIpAddress: true
+          DeleteOnTermination: true
+          SubnetId: !Ref PublicSubnet
+          GroupSet:
+            - !Ref WorkshopSecurityGroup
+      PropagateTagsToVolumeOnCreation: true
+      BlockDeviceMappings:
+        - DeviceName: !Ref RootDeviceName
+          Ebs:
+            Encrypted: true
+            VolumeType: gp3
+            VolumeSize: 200
+            DeleteOnTermination: true
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          set -euo pipefail
+          exec > >(tee -a /var/log/isaac-workshop-init.log) 2>&1
+          source /etc/os-release
+          test "$ID" = ubuntu
+          test "$VERSION_ID" = 22.04
+          test "$(uname -m)" = x86_64
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get -o DPkg::Lock::Timeout=300 update
+          apt-get -o DPkg::Lock::Timeout=300 install -y ca-certificates curl snapd
+          if systemctl cat amazon-ssm-agent.service >/dev/null 2>&1; then
+            systemctl enable --now amazon-ssm-agent
+          else
+            snap list amazon-ssm-agent >/dev/null 2>&1 || snap install amazon-ssm-agent --classic
+            systemctl enable --now snap.amazon-ssm-agent.amazon-ssm-agent.service
+          fi
+          printf '%s\n' \
+            'AWS_DEFAULT_REGION=${AWS::Region}' \
+            'RESULTS_BUCKET=${ResultsBucket}' \
+            'ISAAC_VERSION=5.1.0' \
+            'ISAAC_ROBOT=turtlebot3_burger' \
+            > /etc/isaac-workshop.env
+          chmod 644 /etc/isaac-workshop.env
+          touch /var/lib/isaac-workshop-host-init.done
+          echo "Base host ready. Copy the repository, then run bootstrap-host.sh install."
+      Tags:
+        - Key: Name
+          Value: !Sub '${AWS::StackName}-isaac'
+        - Key: Workshop
+          Value: physical-ai-isaac-aws
+
+Outputs:
+  InstanceId:
+    Description: GPU instance. Stack completion does not verify GPU or Isaac Sim readiness.
+    Value: !Ref WorkshopInstance
+  PublicIp:
+    Description: Initial IP only. After stop/start use EC2 DescribeInstances with InstanceId.
+    Value: !GetAtt WorkshopInstance.PublicIp
+  ResultsBucketName:
+    Description: Private encrypted bucket. Empty this bucket before stack deletion.
+    Value: !Ref ResultsBucket
+  SshCommand:
+    Description: Initial command. Replace PEM path and refresh the EC2 IP after stop/start.
+    Value: !Sub 'ssh -i /path/to/key.pem ubuntu@${WorkshopInstance.PublicIp}'
+  SsmCommand:
+    Description: Requires caller permissions, SSM agent readiness and the Session Manager plugin.
+    Value: !Sub 'aws ssm start-session --region ${AWS::Region} --target ${WorkshopInstance}'
+  PreviewTunnelCommand:
+    Description: Initial command. Refresh EC2 IP after stop/start; run serve-preview.sh first.
+    Value: !Sub 'ssh -N -L 127.0.0.1:8000:127.0.0.1:8000 -i /path/to/key.pem ubuntu@${WorkshopInstance.PublicIp}'

@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="740" viewBox="0 0 1200 740" role="img" aria-labelledby="title description" font-family="Apple SD Gothic Neo, Noto Sans CJK KR, Noto Sans KR, AppleGothic, sans-serif" fill="#15283a">
+  <title id="title">거리 숫자가 바퀴의 움직임이 되기까지</title>
+  <desc id="description">2D 라이다, 12개 구역의 최소 거리(m), 작은 정책, 독립 정지 검사, 모터 순서. 거리와 수신 시각은 정지 검사에도 직접 전달된다. 실물의 움직임은 다시 센서 관측으로 돌아온다. 전방 최소 거리 0.35 m 이하, 스캔 나이 0.5 s 이상 또는 무효 입력이면 정지 고정. 원인 해결 후 노드 재시작.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#075bcb" />
+    </marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#086f73" />
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#a3480c" />
+    </marker>
+    <marker id="arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#526b80" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="740" rx="0" fill="#ffffff" stroke="none" />
+  <text id="text-1" x="44" y="44" font-size="24" fill="#075bcb" text-anchor="start" font-weight="700">센서에서 행동까지</text>
+  <text id="text-2" x="44" y="100" font-size="42" fill="#15283a" text-anchor="start" font-weight="700">거리 숫자가 바퀴의 움직임이 되기까지</text>
+  <text id="text-3" x="44" y="140" font-size="26" fill="#526b80" text-anchor="start" font-weight="500">작은 신경망은 속도를 제안하고, 별도의 정지 검사가 출력을 확인합니다</text>
+  <rect x="44" y="198" width="184" height="262" rx="18" fill="#f1f7fe" stroke="#d7e4ef" />
+  <text id="text-4" x="136.0" y="240" font-size="27" fill="#15283a" text-anchor="middle" font-weight="700">2D 라이다</text>
+  <text id="text-5" x="136.0" y="398" font-size="24" fill="#15283a" text-anchor="middle" font-weight="500">주변 거리 측정</text>
+  <text id="text-6" x="136.0" y="434" font-size="24" fill="#526b80" text-anchor="middle" font-weight="500">360° 스캔</text>
+  <path d="M 235 321 H 260" fill="none" stroke="#075bcb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)" />
+  <rect x="268" y="198" width="184" height="262" rx="18" fill="#f1f7fe" stroke="#d7e4ef" />
+  <text id="text-7" x="360.0" y="240" font-size="27" fill="#15283a" text-anchor="middle" font-weight="700">12개 거리</text>
+  <text id="text-8" x="360.0" y="398" font-size="24" fill="#15283a" text-anchor="middle" font-weight="500">구역별 최솟값</text>
+  <text id="text-9" x="360.0" y="434" font-size="24" fill="#526b80" text-anchor="middle" font-weight="500">거리 단위 m</text>
+  <path d="M 459 321 H 484" fill="none" stroke="#075bcb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)" />
+  <rect x="492" y="198" width="184" height="262" rx="18" fill="#f1f7fe" stroke="#d7e4ef" />
+  <text id="text-10" x="584.0" y="240" font-size="27" fill="#15283a" text-anchor="middle" font-weight="700">작은 정책</text>
+  <text id="text-11" x="584.0" y="398" font-size="24" fill="#15283a" text-anchor="middle" font-weight="500">전진 · 회전</text>
+  <text id="text-12" x="584.0" y="434" font-size="24" fill="#526b80" text-anchor="middle" font-weight="500">속도 두 개 제안</text>
+  <path d="M 683 321 H 708" fill="none" stroke="#075bcb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)" />
+  <rect x="716" y="198" width="212" height="262" rx="18" fill="#fff2e6" stroke="#d7e4ef" />
+  <text id="text-13" x="822.0" y="240" font-size="27" fill="#15283a" text-anchor="middle" font-weight="700">독립 정지 검사</text>
+  <text id="text-14" x="822.0" y="398" font-size="24" fill="#15283a" text-anchor="middle" font-weight="500">이상이면 0</text>
+  <text id="text-15" x="822.0" y="434" font-size="24" fill="#526b80" text-anchor="middle" font-weight="500">정지를 유지</text>
+  <path d="M 935 321 H 960" fill="none" stroke="#075bcb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)" />
+  <rect x="968" y="198" width="188" height="262" rx="18" fill="#f1f7fe" stroke="#d7e4ef" />
+  <text id="text-16" x="1062.0" y="240" font-size="27" fill="#15283a" text-anchor="middle" font-weight="700">모터 · 바퀴</text>
+  <text id="text-17" x="1062.0" y="398" font-size="24" fill="#15283a" text-anchor="middle" font-weight="500">명령을 실행</text>
+  <text id="text-18" x="1062.0" y="434" font-size="24" fill="#526b80" text-anchor="middle" font-weight="500">로봇이 이동</text>
+  <g transform="translate(136 314) scale(1.05)">
+    <rect x="-18" y="-33" width="32" height="12" rx="4" fill="#15283a" />
+    <line x1="-10" y1="-31" x2="-10" y2="-23" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="0" y1="-31" x2="0" y2="-23" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="10" y1="-31" x2="10" y2="-23" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <rect x="-18" y="21" width="32" height="12" rx="4" fill="#15283a" />
+    <line x1="-10" y1="23" x2="-10" y2="31" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="0" y1="23" x2="0" y2="31" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="10" y1="23" x2="10" y2="31" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <rect x="-29" y="-22" width="58" height="44" rx="14" fill="#ffffff" stroke="#075bcb" stroke-width="3" />
+    <circle cx="-7" cy="0" r="14" fill="#e8f6f4" stroke="#086f73" stroke-width="3" />
+    <circle cx="-7" cy="0" r="5" fill="#086f73" />
+    <path d="M 13 -7 L 22 0 L 13 7" fill="none" stroke="#075bcb" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
+  </g>
+  <line x1="181.0" y1="314.0" x2="203.0" y2="314.0" stroke="#086f73" stroke-width="3" stroke-linecap="round" />
+  <line x1="167.81980515339464" y1="282.1801948466054" x2="183.3761543394987" y2="266.62384566050133" stroke="#086f73" stroke-width="3" stroke-linecap="round" />
+  <line x1="136.0" y1="269.0" x2="136.0" y2="247.0" stroke="#086f73" stroke-width="3" stroke-linecap="round" />
+  <line x1="104.18019484660536" y1="282.18019484660533" x2="88.62384566050132" y2="266.62384566050133" stroke="#086f73" stroke-width="3" stroke-linecap="round" />
+  <line x1="91.0" y1="314.0" x2="69.0" y2="314.0" stroke="#086f73" stroke-width="3" stroke-linecap="round" />
+  <line x1="104.18019484660536" y1="345.8198051533946" x2="88.6238456605013" y2="361.37615433949867" stroke="#086f73" stroke-width="3" stroke-linecap="round" />
+  <line x1="136.0" y1="359.0" x2="136.0" y2="381.0" stroke="#086f73" stroke-width="3" stroke-linecap="round" />
+  <line x1="167.81980515339464" y1="345.81980515339467" x2="183.37615433949867" y2="361.3761543394987" stroke="#086f73" stroke-width="3" stroke-linecap="round" />
+  <rect x="306" y="273" width="22" height="24" rx="5" fill="#086f73" stroke="none" />
+  <rect x="334" y="273" width="22" height="24" rx="5" fill="#075bcb" stroke="none" />
+  <rect x="362" y="273" width="22" height="24" rx="5" fill="#075bcb" stroke="none" />
+  <rect x="390" y="273" width="22" height="24" rx="5" fill="#086f73" stroke="none" />
+  <rect x="306" y="304" width="22" height="24" rx="5" fill="#075bcb" stroke="none" />
+  <rect x="334" y="304" width="22" height="24" rx="5" fill="#075bcb" stroke="none" />
+  <rect x="362" y="304" width="22" height="24" rx="5" fill="#086f73" stroke="none" />
+  <rect x="390" y="304" width="22" height="24" rx="5" fill="#075bcb" stroke="none" />
+  <rect x="306" y="335" width="22" height="24" rx="5" fill="#075bcb" stroke="none" />
+  <rect x="334" y="335" width="22" height="24" rx="5" fill="#086f73" stroke="none" />
+  <rect x="362" y="335" width="22" height="24" rx="5" fill="#075bcb" stroke="none" />
+  <rect x="390" y="335" width="22" height="24" rx="5" fill="#075bcb" stroke="none" />
+  <line x1="538" y1="290" x2="582" y2="276" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="538" y1="290" x2="582" y2="306" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="538" y1="290" x2="582" y2="336" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="538" y1="290" x2="582" y2="366" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="538" y1="322" x2="582" y2="276" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="538" y1="322" x2="582" y2="306" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="538" y1="322" x2="582" y2="336" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="538" y1="322" x2="582" y2="366" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="538" y1="354" x2="582" y2="276" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="538" y1="354" x2="582" y2="306" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="538" y1="354" x2="582" y2="336" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="538" y1="354" x2="582" y2="366" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="582" y1="276" x2="630" y2="306" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="582" y1="276" x2="630" y2="338" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="582" y1="306" x2="630" y2="306" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="582" y1="306" x2="630" y2="338" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="582" y1="336" x2="630" y2="306" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="582" y1="336" x2="630" y2="338" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="582" y1="366" x2="630" y2="306" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <line x1="582" y1="366" x2="630" y2="338" stroke="#b9cfe8" stroke-width="2" stroke-linecap="round" />
+  <circle cx="538" cy="290" r="9" fill="#075bcb" stroke="none" />
+  <circle cx="538" cy="322" r="9" fill="#075bcb" stroke="none" />
+  <circle cx="538" cy="354" r="9" fill="#075bcb" stroke="none" />
+  <circle cx="582" cy="276" r="9" fill="#075bcb" stroke="none" />
+  <circle cx="582" cy="306" r="9" fill="#075bcb" stroke="none" />
+  <circle cx="582" cy="336" r="9" fill="#075bcb" stroke="none" />
+  <circle cx="582" cy="366" r="9" fill="#075bcb" stroke="none" />
+  <circle cx="630" cy="306" r="9" fill="#086f73" stroke="none" />
+  <circle cx="630" cy="338" r="9" fill="#086f73" stroke="none" />
+  <path d="M 822 268 L 866 285 V 320 Q 864 353 822 372 Q 780 353 778 320 V 285 Z" fill="#fff2e6" stroke="#a3480c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 803 318 L 818 333 L 845 301" fill="none" stroke="#a3480c" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  <g transform="translate(1062 318) scale(1.18)">
+    <rect x="-37" y="1" width="14" height="33" rx="5" fill="#15283a" />
+    <rect x="23" y="1" width="14" height="33" rx="5" fill="#15283a" />
+    <rect x="-29" y="-18" width="58" height="9" rx="4" fill="#ffffff" stroke="#075bcb" stroke-width="2.5" />
+    <rect x="-29" y="0" width="58" height="9" rx="4" fill="#ffffff" stroke="#075bcb" stroke-width="2.5" />
+    <line x1="-21" y1="-14" x2="-21" y2="3" stroke="#075bcb" stroke-width="3" />
+    <line x1="21" y1="-14" x2="21" y2="3" stroke="#075bcb" stroke-width="3" />
+    <rect x="-12" y="-35" width="24" height="16" rx="5" fill="#086f73" />
+    <ellipse cx="0" cy="-35" rx="12" ry="4" fill="#e8f6f4" stroke="#086f73" stroke-width="2" />
+    <path d="M -48 36 H 48" stroke="#d7e4ef" stroke-width="3" />
+  </g>
+  <path d="M 360 460 V 492 H 822 V 464" fill="none" stroke="#a3480c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-orange)" stroke-dasharray="7 7" />
+  <text id="text-19" x="591" y="530" font-size="24" fill="#a3480c" text-anchor="middle" font-weight="500">거리 · 최신 수신 시각</text>
+  <path d="M 1062 460 V 572 H 136 V 467" fill="none" stroke="#086f73" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-teal)" />
+  <text id="text-20" x="600" y="610" font-size="28" fill="#086f73" text-anchor="middle" font-weight="500">실제 로봇이 움직이면, 센서로 다시 관측합니다</text>
+  <rect x="44" y="635" width="1112" height="79" rx="18" fill="#fff2e6" stroke="#d7e4ef" />
+  <text id="text-21" x="600" y="667" font-size="27" fill="#a3480c" text-anchor="middle" font-weight="700">전방 ≤ 0.35 m 또는 스캔 나이 ≥ 0.5 s → 정지 고정</text>
+  <text id="text-22" x="600" y="700" font-size="24" fill="#15283a" text-anchor="middle" font-weight="500">정지 후에는 원인을 해결하고 노드를 재시작</text>
+</svg>

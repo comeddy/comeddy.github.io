@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="740" viewBox="0 0 1200 740" role="img" aria-labelledby="title description" font-family="Apple SD Gothic Neo, Noto Sans CJK KR, Noto Sans KR, AppleGothic, sans-serif" fill="#15283a">
+  <title id="title">가상에서 배우고, 실제 로봇 안에서 판단해요</title>
+  <desc id="description">AWS EC2의 실제 Isaac Sim 주행에서 규칙 기반 교사가 운전하여 dataset.npz를 수집한다. observations는 Nx12 미터, actions는 Nx2 m/s·rad/s, episodes는 N개 정수 ID. 에피소드 단위로 학습용과 검증용을 분리한다. NumPy 정책은 CPU에서도 학습 가능하다. policy.npz와 policy.npz.sha256을 scp로 EC2에서 노트북에 받고 노트북에서 Pi에 보낸다. Pi에서 SHA-256을 확인한 뒤 센서, 정책, 정지 검사, 모터의 로컬 루프를 실행한다. AWS는 실시간 모터 제어 루프에 참여하지 않는다.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#075bcb" />
+    </marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#086f73" />
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#a3480c" />
+    </marker>
+    <marker id="arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#526b80" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="740" rx="0" fill="#ffffff" stroke="none" />
+  <text id="text-1" x="44" y="44" font-size="24" fill="#075bcb" text-anchor="start" font-weight="700">가상에서 실물로</text>
+  <text id="text-2" x="44" y="100" font-size="42" fill="#15283a" text-anchor="start" font-weight="700">가상에서 배우고, 실제 로봇 안에서 판단해요</text>
+  <text id="text-3" x="44" y="140" font-size="26" fill="#526b80" text-anchor="start" font-weight="500">가상 주행 데이터 → 학습·검증 → 모델 파일 복사 → 로봇의 로컬 추론</text>
+  <rect x="44" y="177" width="1112" height="312" rx="18" fill="#f1f7fe" stroke="#d7e4ef" />
+  <text id="text-4" x="68" y="215" font-size="28" fill="#075bcb" text-anchor="start" font-weight="700">AWS EC2 · 실제 Isaac Sim 주행 + NumPy 학습</text>
+  <rect x="68" y="238" width="314" height="227" rx="18" fill="#ffffff" stroke="#d7e4ef" />
+  <text id="text-5" x="90" y="276" font-size="27" fill="#15283a" text-anchor="start" font-weight="700">규칙 교사가 운전</text>
+  <text id="text-6" x="90" y="318" font-size="29" fill="#075bcb" text-anchor="start" font-weight="700">dataset.npz</text>
+  <text id="text-7" x="90" y="359" font-size="25" fill="#15283a" text-anchor="start" font-weight="500">관측 N×12 · 거리(m)</text>
+  <text id="text-8" x="90" y="398" font-size="25" fill="#15283a" text-anchor="start" font-weight="500">행동 N×2 · m/s, rad/s</text>
+  <text id="text-9" x="90" y="437" font-size="24" fill="#15283a" text-anchor="start" font-weight="500">episodes · 각 행의 실험 ID</text>
+  <path d="M 389 348 H 412" fill="none" stroke="#075bcb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)" />
+  <rect x="422" y="238" width="340" height="227" rx="18" fill="#ffffff" stroke="#d7e4ef" />
+  <text id="text-10" x="444" y="276" font-size="28" fill="#15283a" text-anchor="start" font-weight="700">에피소드 통째로 분리</text>
+  <rect x="444" y="299" width="296" height="60" rx="12" fill="#f1f7fe" stroke="none" />
+  <text id="text-11" x="592" y="338" font-size="27" fill="#075bcb" text-anchor="middle" font-weight="700">학습용 → 정책 학습</text>
+  <rect x="444" y="375" width="296" height="60" rx="12" fill="#e8f6f4" stroke="none" />
+  <text id="text-12" x="592" y="414" font-size="27" fill="#086f73" text-anchor="middle" font-weight="700">검증용 → 오차 확인</text>
+  <path d="M 770 348 H 796" fill="none" stroke="#075bcb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)" />
+  <rect x="806" y="238" width="326" height="227" rx="18" fill="#ffffff" stroke="#d7e4ef" />
+  <text id="text-13" x="830" y="276" font-size="28" fill="#15283a" text-anchor="start" font-weight="700">배운 결과를 파일로</text>
+  <path d="M 836 305 H 867 L 887 325 V 382 H 836 Z" fill="#f1f7fe" stroke="#075bcb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 867 305 V 325 H 887" fill="none" stroke="#075bcb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <line x1="846" y1="344" x2="876" y2="344" stroke="#086f73" stroke-width="3" stroke-linecap="round" />
+  <line x1="846" y1="359" x2="869" y2="359" stroke="#086f73" stroke-width="3" stroke-linecap="round" />
+  <text id="text-14" x="903" y="340" font-size="30" fill="#075bcb" text-anchor="start" font-weight="700">policy.npz</text>
+  <text id="text-15" x="903" y="379" font-size="25" fill="#086f73" text-anchor="start" font-weight="700">+ SHA-256</text>
+  <text id="text-16" x="830" y="437" font-size="25" fill="#15283a" text-anchor="start" font-weight="500">모델 + 해시 파일</text>
+  <path d="M 970 466 V 513 H 246 V 550" fill="none" stroke="#075bcb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)" />
+  <rect x="415" y="497" width="340" height="33" rx="6" fill="#ffffff" stroke="none" />
+  <text id="text-17" x="585" y="523" font-size="25" fill="#075bcb" text-anchor="middle" font-weight="700">scp · EC2 → 노트북</text>
+  <rect x="68" y="557" width="352" height="131" rx="18" fill="#f1f7fe" stroke="#d7e4ef" />
+  <rect x="96.6" y="592.8" width="74.8" height="47.6" rx="5.1" fill="#ffffff" stroke="#075bcb" stroke-width="3" />
+  <path d="M 87.25 648.05 H 180.75 L 171.4 640.4 H 96.6 Z" fill="#f1f7fe" stroke="#075bcb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <line x1="110.2" y1="608.1" x2="147.6" y2="608.1" stroke="#086f73" stroke-width="4" stroke-linecap="round" />
+  <line x1="110.2" y1="620.0" x2="157.8" y2="620.0" stroke="#086f73" stroke-width="4" stroke-linecap="round" />
+  <line x1="110.2" y1="631.9" x2="137.4" y2="631.9" stroke="#086f73" stroke-width="4" stroke-linecap="round" />
+  <text id="text-18" x="198" y="602" font-size="29" fill="#15283a" text-anchor="start" font-weight="700">내 노트북</text>
+  <text id="text-19" x="198" y="646" font-size="25" fill="#526b80" text-anchor="start" font-weight="500">두 파일 전달</text>
+  <path d="M 429 622 H 489" fill="none" stroke="#075bcb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)" />
+  <text id="text-20" x="459" y="606" font-size="24" fill="#075bcb" text-anchor="middle" font-weight="700">scp</text>
+  <rect x="500" y="549" width="632" height="139" rx="18" fill="#e8f6f4" stroke="#d7e4ef" />
+  <g transform="translate(558 600) scale(0.75)">
+    <rect x="-18" y="-33" width="32" height="12" rx="4" fill="#15283a" />
+    <line x1="-10" y1="-31" x2="-10" y2="-23" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="0" y1="-31" x2="0" y2="-23" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="10" y1="-31" x2="10" y2="-23" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <rect x="-18" y="21" width="32" height="12" rx="4" fill="#15283a" />
+    <line x1="-10" y1="23" x2="-10" y2="31" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="0" y1="23" x2="0" y2="31" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="10" y1="23" x2="10" y2="31" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <rect x="-29" y="-22" width="58" height="44" rx="14" fill="#ffffff" stroke="#075bcb" stroke-width="3" />
+    <circle cx="-7" cy="0" r="14" fill="#e8f6f4" stroke="#086f73" stroke-width="3" />
+    <circle cx="-7" cy="0" r="5" fill="#086f73" />
+    <path d="M 13 -7 L 22 0 L 13 7" fill="none" stroke="#075bcb" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
+  </g>
+  <text id="text-21" x="615" y="586" font-size="28" fill="#086f73" text-anchor="start" font-weight="700">Raspberry Pi · 로컬 추론</text>
+  <text id="text-22" x="615" y="623" font-size="25" fill="#15283a" text-anchor="start" font-weight="500">SHA-256 확인 후 모델 읽기</text>
+  <text id="text-23" x="816" y="666" font-size="26" fill="#086f73" text-anchor="middle" font-weight="700">센서 → 정책 → 정지 검사 → 모터</text>
+  <text id="text-24" x="600" y="725" font-size="27" fill="#075bcb" text-anchor="middle" font-weight="500">AWS에서 실시간 모터 명령을 보내지 않습니다.</text>
+</svg>

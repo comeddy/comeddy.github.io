@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title description" font-family="Apple SD Gothic Neo, Noto Sans CJK KR, Noto Sans KR, AppleGothic, sans-serif" fill="#15283a">
+  <title id="title">로봇이 연습할 작은 방을 위에서 보면</title>
+  <desc id="description">공식 TurtleBot3 Burger를 사용하는 가상 경기장의 교육용 평면도. 안쪽 6x6 m, 벽 4개, 0.45x0.45x0.50 m 상자 8개. 그림의 배치는 설명용이며 실제 seed의 실행 결과가 아니다. 실제 시뮬레이터는 base_footprint 기준 높이 약 0.182 m에서 360개의 수평 PhysX ray로 같은 벽·상자의 충돌 형상을 측정한다. 이 그림의 광선은 일부만 표시하고 로봇 아이콘은 확대했다.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#075bcb" />
+    </marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#086f73" />
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#a3480c" />
+    </marker>
+    <marker id="arrow-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M 1 1 L 9 5 L 1 9 Z" fill="#526b80" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="760" rx="0" fill="#ffffff" stroke="none" />
+  <text id="text-1" x="44" y="44" font-size="24" fill="#075bcb" text-anchor="start" font-weight="700">가상 실험실 살펴보기</text>
+  <text id="text-2" x="44" y="100" font-size="42" fill="#15283a" text-anchor="start" font-weight="700">로봇이 연습할 작은 방을 위에서 보면</text>
+  <text id="text-3" x="44" y="140" font-size="26" fill="#a3480c" text-anchor="start" font-weight="500">개념도 · 실제 Isaac Sim 실행 화면이 아닙니다</text>
+  <rect x="95" y="217" width="432" height="432" rx="0" fill="#f1f7fe" stroke="none" />
+  <line x1="167" y1="217" x2="167" y2="649" stroke="#d7e4ef" stroke-width="1" stroke-linecap="round" />
+  <line x1="95" y1="289" x2="527" y2="289" stroke="#d7e4ef" stroke-width="1" stroke-linecap="round" />
+  <line x1="239" y1="217" x2="239" y2="649" stroke="#d7e4ef" stroke-width="1" stroke-linecap="round" />
+  <line x1="95" y1="361" x2="527" y2="361" stroke="#d7e4ef" stroke-width="1" stroke-linecap="round" />
+  <line x1="311" y1="217" x2="311" y2="649" stroke="#d7e4ef" stroke-width="1" stroke-linecap="round" />
+  <line x1="95" y1="433" x2="527" y2="433" stroke="#d7e4ef" stroke-width="1" stroke-linecap="round" />
+  <line x1="383" y1="217" x2="383" y2="649" stroke="#d7e4ef" stroke-width="1" stroke-linecap="round" />
+  <line x1="95" y1="505" x2="527" y2="505" stroke="#d7e4ef" stroke-width="1" stroke-linecap="round" />
+  <line x1="455" y1="217" x2="455" y2="649" stroke="#d7e4ef" stroke-width="1" stroke-linecap="round" />
+  <line x1="95" y1="577" x2="527" y2="577" stroke="#d7e4ef" stroke-width="1" stroke-linecap="round" />
+  <line x1="95" y1="184" x2="527" y2="184" stroke="#526b80" stroke-width="2" stroke-linecap="round" />
+  <line x1="95" y1="177" x2="95" y2="194" stroke="#526b80" stroke-width="2" stroke-linecap="round" />
+  <line x1="527" y1="177" x2="527" y2="194" stroke="#526b80" stroke-width="2" stroke-linecap="round" />
+  <rect x="252" y="163" width="119" height="35" rx="0" fill="#ffffff" stroke="none" />
+  <text id="text-4" x="311" y="189" font-size="26" fill="#526b80" text-anchor="middle" font-weight="500">안쪽 6 m</text>
+  <line x1="61" y1="217" x2="61" y2="649" stroke="#526b80" stroke-width="2" stroke-linecap="round" />
+  <line x1="54" y1="217" x2="70" y2="217" stroke="#526b80" stroke-width="2" stroke-linecap="round" />
+  <line x1="54" y1="649" x2="70" y2="649" stroke="#526b80" stroke-width="2" stroke-linecap="round" />
+  <rect x="44" y="370" width="34" height="125" rx="0" fill="#ffffff" stroke="none" />
+  <text id="text-5" x="68" y="433" font-size="26" fill="#526b80" text-anchor="middle" font-weight="500" transform="rotate(-90 68 433)">안쪽 6 m</text>
+  <line x1="275.0" y1="461.79999999999995" x2="438.8" y2="461.8" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="0" />
+  <circle cx="438.8" cy="461.8" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="518.413" y2="396.578" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="15" />
+  <circle cx="518.413" cy="396.578" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="493.238" y2="335.8" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="30" />
+  <circle cx="493.238" cy="335.8" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="338.0" y2="398.8" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="45" />
+  <circle cx="338.0" cy="398.8" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="401.0" y2="243.562" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="60" />
+  <circle cx="401.0" cy="243.562" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="340.222" y2="218.387" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="75" />
+  <circle cx="340.222" cy="218.387" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="275.0" y2="305.2" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="90" />
+  <circle cx="275.0" cy="305.2" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="209.778" y2="218.387" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="105" />
+  <circle cx="209.778" cy="218.387" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="183.2" y2="302.798" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="120" />
+  <circle cx="183.2" cy="302.798" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="96.809" y2="283.609" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="135" />
+  <circle cx="96.809" cy="283.609" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="204.8" y2="421.27" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="150" />
+  <circle cx="204.8" cy="421.27" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="187.67" y2="438.4" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="165" />
+  <circle cx="187.67" cy="438.4" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="95.0" y2="461.8" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="180" />
+  <circle cx="95.0" cy="461.8" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="95.0" y2="510.031" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="195" />
+  <circle cx="95.0" cy="510.031" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="95.0" y2="565.723" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="210" />
+  <circle cx="95.0" cy="565.723" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="183.2" y2="553.6" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="225" />
+  <circle cx="183.2" cy="553.6" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="166.92" y2="649.0" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="240" />
+  <circle cx="166.92" cy="649.0" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="224.84" y2="649.0" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="255" />
+  <circle cx="224.84" cy="649.0" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="275.0" y2="649.0" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="270" />
+  <circle cx="275.0" cy="649.0" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="325.16" y2="649.0" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="285" />
+  <circle cx="325.16" cy="649.0" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="383.08" y2="649.0" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="300" />
+  <circle cx="383.08" cy="649.0" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="352.4" y2="539.2" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="315" />
+  <circle cx="352.4" cy="539.2" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="493.238" y2="587.8" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="330" />
+  <circle cx="493.238" cy="587.8" r="3" fill="#086f73" stroke="none" />
+  <line x1="275.0" y1="461.79999999999995" x2="518.413" y2="527.022" stroke="#086f73" stroke-width="2" stroke-linecap="round" opacity="0.45" data-ray-deg="345" />
+  <circle cx="518.413" cy="527.022" r="3" fill="#086f73" stroke="none" />
+  <rect x="80.6" y="202.6" width="14.4" height="460.8" rx="2" fill="#15283a" stroke="none" id="wall-1" />
+  <rect x="527.0" y="202.6" width="14.4" height="460.8" rx="2" fill="#15283a" stroke="none" id="wall-2" />
+  <rect x="95.0" y="649.0" width="432.0" height="14.4" rx="2" fill="#15283a" stroke="none" id="wall-3" />
+  <rect x="95.0" y="202.6" width="432.0" height="14.4" rx="2" fill="#15283a" stroke="none" id="wall-4" />
+  <rect x="150.8" y="280.0" width="32.4" height="32.4" rx="4" fill="#fff2e6" stroke="#a3480c" stroke-width="2" id="box-1" />
+  <text id="text-6" x="167.0" y="305.0" font-size="24" fill="#a3480c" text-anchor="middle" font-weight="700">1</text>
+  <rect x="258.79999999999995" y="272.8" width="32.4" height="32.4" rx="4" fill="#fff2e6" stroke="#a3480c" stroke-width="2" id="box-2" />
+  <text id="text-7" x="274.99999999999994" y="297.8" font-size="24" fill="#a3480c" text-anchor="middle" font-weight="700">2</text>
+  <rect x="424.40000000000003" y="287.2" width="32.4" height="32.4" rx="4" fill="#fff2e6" stroke="#a3480c" stroke-width="2" id="box-3" />
+  <text id="text-8" x="440.6" y="312.2" font-size="24" fill="#a3480c" text-anchor="middle" font-weight="700">3</text>
+  <rect x="172.39999999999998" y="406.0" width="32.4" height="32.4" rx="4" fill="#fff2e6" stroke="#a3480c" stroke-width="2" id="box-4" />
+  <text id="text-9" x="188.59999999999997" y="431.0" font-size="24" fill="#a3480c" text-anchor="middle" font-weight="700">4</text>
+  <rect x="330.79999999999995" y="366.4" width="32.4" height="32.4" rx="4" fill="#fff2e6" stroke="#a3480c" stroke-width="2" id="box-5" />
+  <text id="text-10" x="346.99999999999994" y="391.4" font-size="24" fill="#a3480c" text-anchor="middle" font-weight="700">5</text>
+  <rect x="438.8" y="438.4" width="32.4" height="32.4" rx="4" fill="#fff2e6" stroke="#a3480c" stroke-width="2" id="box-6" />
+  <text id="text-11" x="455.0" y="463.4" font-size="24" fill="#a3480c" text-anchor="middle" font-weight="700">6</text>
+  <rect x="165.2" y="553.5999999999999" width="32.4" height="32.4" rx="4" fill="#fff2e6" stroke="#a3480c" stroke-width="2" id="box-7" />
+  <text id="text-12" x="181.39999999999998" y="578.5999999999999" font-size="24" fill="#a3480c" text-anchor="middle" font-weight="700">7</text>
+  <rect x="352.40000000000003" y="539.2" width="32.4" height="32.4" rx="4" fill="#fff2e6" stroke="#a3480c" stroke-width="2" id="box-8" />
+  <text id="text-13" x="368.6" y="564.2" font-size="24" fill="#a3480c" text-anchor="middle" font-weight="700">8</text>
+  <g transform="translate(280.6 461.79999999999995) scale(0.8)">
+    <rect x="-18" y="-33" width="32" height="12" rx="4" fill="#15283a" />
+    <line x1="-10" y1="-31" x2="-10" y2="-23" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="0" y1="-31" x2="0" y2="-23" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="10" y1="-31" x2="10" y2="-23" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <rect x="-18" y="21" width="32" height="12" rx="4" fill="#15283a" />
+    <line x1="-10" y1="23" x2="-10" y2="31" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="0" y1="23" x2="0" y2="31" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <line x1="10" y1="23" x2="10" y2="31" stroke="#ffffff" stroke-width="1" opacity="0.5" />
+    <rect x="-29" y="-22" width="58" height="44" rx="14" fill="#ffffff" stroke="#075bcb" stroke-width="3" />
+    <circle cx="-7" cy="0" r="14" fill="#e8f6f4" stroke="#086f73" stroke-width="3" />
+    <circle cx="-7" cy="0" r="5" fill="#086f73" />
+    <path d="M 13 -7 L 22 0 L 13 7" fill="none" stroke="#075bcb" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
+  </g>
+  <text id="text-14" x="311" y="697" font-size="25" fill="#526b80" text-anchor="middle" font-weight="500">위에서 본 모습 · 배치는 설명용</text>
+  <rect x="603" y="178" width="553" height="154" rx="18" fill="#f1f7fe" stroke="#d7e4ef" />
+  <text id="text-15" x="627" y="217" font-size="28" fill="#15283a" text-anchor="start" font-weight="700">공식 TurtleBot3 Burger 사용</text>
+  <g transform="translate(668 276) scale(0.9)">
+    <rect x="-37" y="1" width="14" height="33" rx="5" fill="#15283a" />
+    <rect x="23" y="1" width="14" height="33" rx="5" fill="#15283a" />
+    <rect x="-29" y="-18" width="58" height="9" rx="4" fill="#ffffff" stroke="#075bcb" stroke-width="2.5" />
+    <rect x="-29" y="0" width="58" height="9" rx="4" fill="#ffffff" stroke="#075bcb" stroke-width="2.5" />
+    <line x1="-21" y1="-14" x2="-21" y2="3" stroke="#075bcb" stroke-width="3" />
+    <line x1="21" y1="-14" x2="21" y2="3" stroke="#075bcb" stroke-width="3" />
+    <rect x="-12" y="-35" width="24" height="16" rx="5" fill="#086f73" />
+    <ellipse cx="0" cy="-35" rx="12" ry="4" fill="#e8f6f4" stroke="#086f73" stroke-width="2" />
+    <path d="M -48 36 H 48" stroke="#d7e4ef" stroke-width="3" />
+  </g>
+  <text id="text-16" x="733" y="268" font-size="27" fill="#075bcb" text-anchor="start" font-weight="700">두 바퀴로 이동</text>
+  <text id="text-17" x="733" y="309" font-size="25" fill="#15283a" text-anchor="start" font-weight="500">PhysX가 주행·접촉 계산</text>
+  <rect x="603" y="351" width="553" height="143" rx="18" fill="#f1f7fe" stroke="#d7e4ef" />
+  <text id="text-18" x="627" y="390" font-size="28" fill="#15283a" text-anchor="start" font-weight="700">상자 8개 + 벽 4개</text>
+  <rect x="628" y="414" width="42" height="42" rx="5" fill="#fff2e6" stroke="#a3480c" stroke-width="2" />
+  <text id="text-19" x="690" y="430" font-size="25" fill="#15283a" text-anchor="start" font-weight="500">상자: 0.45 × 0.45 × 0.50 m</text>
+  <text id="text-20" x="690" y="471" font-size="24" fill="#15283a" text-anchor="start" font-weight="500">배치·출발 자세는 seed로 변경</text>
+  <rect x="603" y="513" width="553" height="177" rx="18" fill="#e8f6f4" stroke="#d7e4ef" />
+  <text id="text-21" x="627" y="552" font-size="28" fill="#086f73" text-anchor="start" font-weight="700">라이다는 바닥과 수평</text>
+  <line x1="627" y1="660" x2="1127" y2="660" stroke="#526b80" stroke-width="2" stroke-linecap="round" />
+  <rect x="1008" y="572" width="50" height="88" rx="3" fill="#fff2e6" stroke="#a3480c" stroke-width="2" />
+  <rect x="646" y="641" width="69" height="9" rx="3" fill="#ffffff" stroke="#075bcb" stroke-width="2" />
+  <circle cx="658" cy="650" r="10" fill="#15283a" stroke="none" />
+  <circle cx="703" cy="650" r="10" fill="#15283a" stroke="none" />
+  <line x1="680" y1="640" x2="680" y2="627.968" stroke="#075bcb" stroke-width="4" stroke-linecap="round" />
+  <rect x="669" y="621.968" width="22" height="12" rx="4" fill="#086f73" stroke="none" />
+  <path d="M 694 627.968 H 1004" fill="none" stroke="#086f73" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-teal)" />
+  <text id="text-22" x="837" y="605" font-size="26" fill="#086f73" text-anchor="middle" font-weight="700">높이 약 0.182 m</text>
+  <text id="text-23" x="627" y="682" font-size="24" fill="#526b80" text-anchor="start" font-weight="500">360개 수평 ray</text>
+  <text id="text-24" x="44" y="739" font-size="24" fill="#526b80" text-anchor="start" font-weight="500">광선은 일부만 표시 · 로봇 아이콘 확대 · 벽과 상자의 충돌 형상을 측정합니다.</text>
+</svg>

@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" agent="generate_aws_architecture.py">
+  <diagram id="arch" name="AWS 배포 구성">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" page="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0" background="#FFFFFF" defaultFontFamily="Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="canvas" value="" style="rounded=0;arcSize=8;fillColor=#FFFFFF;strokeColor=none;strokeWidth=1.5;html=0;" vertex="1" parent="1">
+          <mxGeometry x="0" y="0" width="1600" height="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="title" value="AWS 배포 아키텍처" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=34;fontStyle=1;fontColor=#15283A;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="50" y="40" width="1300" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="실습용 단일 계정 · 단일 리전 · 단일 가용 영역(AZ) 구성" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#506579;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="50" y="100" width="1400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="cloud" value="AWS Cloud · 내 계정 1개" style="sketch=0;outlineConnect=0;gradientColor=none;html=0;whiteSpace=wrap;fontSize=20;fontStyle=1;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_aws_cloud;grStroke=1;strokeColor=#232F3E;fillColor=none;verticalAlign=top;align=left;spacingLeft=40;fontColor=#15283A;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;dashed=0;spacingTop=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="450" y="160" width="1100" height="660" as="geometry" />
+        </mxCell>
+        <mxCell id="laptop-card" value="" style="rounded=1;arcSize=8;fillColor=#F3F6FA;strokeColor=#DAE3EB;strokeWidth=1.5;html=0;" vertex="1" parent="1">
+          <mxGeometry x="50" y="440" width="260" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="external-label" value="AWS 밖 · 로컬 실습 환경" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#075BCB;fontStyle=1;spacing=0;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="50" y="400" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="flow-1" value="" edge="1" parent="1" source="laptop-card" target="ec2_0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;endFill=1;endSize=10;strokeWidth=2;strokeColor=#545B64;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.35;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="555" />
+              <mxPoint x="380" y="588" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow-1-label" value="① SSH&#10;코드 복사" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#506579;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="320" y="470" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="flow-2" value="" edge="1" parent="1" source="ec2_0" target="laptop-card" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;endFill=1;endSize=10;strokeWidth=2;strokeColor=#087D7E;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;exitX=0;exitY=0.8;exitDx=0;exitDy=0;entryX=1;entryY=0.8;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="624" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow-2-label" value="② 모델 받기&#10;SCP" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#087D7E;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="320" y="640" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="flow-3" value="" edge="1" parent="1" source="security-group" target="s3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;endFill=1;endSize=10;strokeWidth=2;strokeColor=#545B64;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;exitX=1;exitY=0.55;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1270" y="600" />
+              <mxPoint x="1270" y="569" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow-3-label" value="③ 선택: 결과 보관&#10;EC2 호스트에서&#10;HTTPS 업로드" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#506579;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="440" width="170" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="outbound" value="외부 다운로드: HTTPS 443 / HTTP 80  ·  선택 접속: SSM은 EC2의 아웃바운드 HTTPS 사용" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#506579;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="450" y="830" width="1100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="handoff" value="" style="rounded=1;arcSize=8;fillColor=#EDF8F6;strokeColor=none;strokeWidth=1.5;html=0;" vertex="1" parent="1">
+          <mxGeometry x="50" y="890" width="1500" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="flow-4" value="" edge="1" parent="1" source="handoff-ec2" target="handoff-laptop" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;endFill=1;endSize=10;strokeWidth=2;strokeColor=#087D7E;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow-5" value="" edge="1" parent="1" source="handoff-laptop" target="handoff-robot" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;endFill=1;endSize=10;strokeWidth=2;strokeColor=#087D7E;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="scp-1" value="SCP" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#087D7E;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="400" y="890" width="130" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="scp-2" value="SCP" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#087D7E;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="660" y="890" width="130" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="local-inference" value="로봇 내부 추론 · 센서 → AI → 모터&#10;Raspberry Pi 4 · ROS 2 Humble" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#15283A;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="900" width="430" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="laptop" value="참가자 노트북" style="sketch=0;outlineConnect=0;fontColor=#15283A;gradientColor=none;fillColor=#15283A;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=0;fontSize=22;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;shape=mxgraph.aws4.client;fontStyle=1;spacingTop=14;" vertex="1" parent="laptop-card">
+          <mxGeometry x="90" y="30" width="78" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="region" value="선택한 AWS 리전 1개" style="sketch=0;outlineConnect=0;gradientColor=none;html=0;whiteSpace=wrap;fontSize=20;fontStyle=1;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_region;grStroke=1;strokeColor=#00A4A6;fillColor=none;verticalAlign=top;align=left;spacingLeft=40;fontColor=#075BCB;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;dashed=1;spacingTop=8;" vertex="1" parent="cloud">
+          <mxGeometry x="30" y="140" width="1030" height="490" as="geometry" />
+        </mxCell>
+        <mxCell id="iam" value="AWS IAM" style="sketch=0;outlineConnect=0;fontColor=#15283A;gradientColor=#F54749;gradientDirection=north;fillColor=#C7131F;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=0;fontSize=20;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.identity_and_access_management;fontStyle=1;spacingTop=8;" vertex="1" parent="cloud">
+          <mxGeometry x="500" y="20" width="78" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="profile-title" value="EC2 인스턴스 프로파일로 권한 연결" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#15283A;fontStyle=1;spacing=0;overflow=hidden;" vertex="1" parent="cloud">
+          <mxGeometry x="610" y="20" width="460" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="profile-detail" value="이 실습 S3 버킷 읽기·쓰기 / SSM 접속 권한" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#506579;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="cloud">
+          <mxGeometry x="610" y="60" width="460" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="laptop-detail" value="명령 실행 · 결과 확인" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#506579;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="laptop-card">
+          <mxGeometry x="20" y="170" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="handoff-title" value="실물 배포" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=22;fontColor=#087D7E;fontStyle=1;spacing=0;overflow=hidden;" vertex="1" parent="handoff">
+          <mxGeometry x="20" y="10" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="handoff-caption" value="로봇은 AWS 밖" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#506579;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="handoff">
+          <mxGeometry x="20" y="40" width="210" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="handoff-ec2" value="EC2" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=21;fontColor=#15283A;fontStyle=1;spacing=0;overflow=hidden;" vertex="1" parent="handoff">
+          <mxGeometry x="250" y="20" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="handoff-laptop" value="노트북" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=21;fontColor=#15283A;fontStyle=1;spacing=0;overflow=hidden;" vertex="1" parent="handoff">
+          <mxGeometry x="490" y="20" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="handoff-robot" value="TurtleBot3 Burger" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=21;fontColor=#15283A;fontStyle=1;spacing=0;overflow=hidden;" vertex="1" parent="handoff">
+          <mxGeometry x="750" y="20" width="250" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="vpc" value="VPC · 10.42.0.0/16" style="sketch=0;outlineConnect=0;gradientColor=none;html=0;whiteSpace=wrap;fontSize=20;fontStyle=1;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_vpc;grStroke=1;strokeColor=#879196;fillColor=none;verticalAlign=top;align=left;spacingLeft=40;fontColor=#506579;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;dashed=0;spacingTop=8;" vertex="1" parent="region">
+          <mxGeometry x="30" y="60" width="690" height="410" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" value="Amazon S3" style="sketch=0;outlineConnect=0;fontColor=#15283A;gradientColor=#6CAE3E;gradientDirection=north;fillColor=#1B660F;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=0;fontSize=21;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;fontStyle=1;spacingTop=8;" vertex="1" parent="region">
+          <mxGeometry x="890" y="240" width="78" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="s3-title" value="비공개 결과 버킷" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=21;fontColor=#15283A;fontStyle=1;spacing=0;overflow=hidden;" vertex="1" parent="region">
+          <mxGeometry x="780" y="360" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="s3-detail" value="데이터 · 모델 · 평가 결과&#10;VPC 외부 / 저장 시 암호화" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#506579;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="region">
+          <mxGeometry x="760" y="400" width="260" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="subnet_0_0" value="퍼블릭 서브넷 · 10.42.1.0/24 · AZ 1개" style="sketch=0;outlineConnect=0;gradientColor=none;html=0;whiteSpace=wrap;fontSize=20;fontStyle=1;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_public_subnet;grStroke=1;strokeColor=#7AA116;fillColor=#F2F6E8;verticalAlign=top;align=left;spacingLeft=40;fontColor=#245F16;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;dashed=0;spacingTop=8;" vertex="1" parent="vpc">
+          <mxGeometry x="30" y="90" width="630" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="route" value="인터넷 게이트웨이(IGW) · 기본 경로 0.0.0.0/0" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#506579;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="vpc">
+          <mxGeometry x="40" y="50" width="610" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="security-group" value="보안 그룹 · SSH 22: 현재 공인 IP/32" style="sketch=0;outlineConnect=0;gradientColor=none;html=0;whiteSpace=wrap;fontSize=20;fontStyle=1;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_security_group;grStroke=1;strokeColor=#C7131F;fillColor=#FFFFFF;verticalAlign=top;align=left;spacingLeft=40;fontColor=#C62828;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;dashed=0;spacingTop=8;strokeWidth=1.5;" vertex="1" parent="subnet_0_0">
+          <mxGeometry x="30" y="50" width="570" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="ebs" value="연결 디스크: Amazon EBS · 암호화 gp3 200 GiB" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#15283A;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="subnet_0_0">
+          <mxGeometry x="40" y="260" width="570" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ec2_0" value="Amazon EC2" style="sketch=0;outlineConnect=0;fontColor=#15283A;gradientColor=#F78E04;gradientDirection=north;fillColor=#D05C17;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=0;fontSize=20;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.ec2;fontStyle=1;spacingTop=8;" vertex="1" parent="security-group">
+          <mxGeometry x="30" y="60" width="78" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="instance-type" value="g6.4xlarge" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=25;fontColor=#15283A;fontStyle=1;spacing=0;overflow=hidden;" vertex="1" parent="security-group">
+          <mxGeometry x="150" y="40" width="380" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="host-detail-0" value="16 vCPU · 64 GiB RAM · NVIDIA L4 24 GB" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#15283A;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="security-group">
+          <mxGeometry x="150" y="80" width="400" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="host-detail-1" value="Ubuntu 22.04 · Docker" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#15283A;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="security-group">
+          <mxGeometry x="150" y="110" width="400" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="host-detail-2" value="Isaac Sim 5.1.0 + NumPy 모방학습" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#15283A;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="security-group">
+          <mxGeometry x="150" y="140" width="400" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="host-detail-3" value="데이터 수집 → 학습 → 가상 검증" style="text;html=0;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontFamily=Amazon Ember, Apple SD Gothic Neo, Noto Sans KR, sans-serif;fontSize=20;fontColor=#087D7E;fontStyle=0;spacing=0;overflow=hidden;" vertex="1" parent="security-group">
+          <mxGeometry x="150" y="170" width="400" height="25" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,9 @@
+{
+  "date": "2026-09-09",
+  "isaac_sim_version": "5.1.0",
+  "instance_type": "g6.4xlarge",
+  "gpu": "NVIDIA L4",
+  "driver_version": "580.178.04",
+  "seed": 42,
+  "png_sha256": "197bb334ab5ac739cba1a7daac41082b86f811ad396f1feb0e5181032711ace4"
+}

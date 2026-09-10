@@ -1,0 +1,5 @@
+# CPU-only training/inference on Python 3.10+.
+# Ubuntu 22.04 ROS robots can keep apt python3-numpy 1.21.5; no pip upgrade needed.
+# In separate training environments pip resolves a NumPy release for that Python.
+# ROS packages come from the Ubuntu ROS installation, not from pip.
+numpy>=1.21.5,<3

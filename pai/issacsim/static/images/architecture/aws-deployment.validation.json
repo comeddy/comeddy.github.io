@@ -1,0 +1,47 @@
+{
+  "validation": "✅ static/images/architecture/aws-deployment.drawio: XML valid, no silent-killer patterns.\n   cells=46  vertices=39  edges=5  aws4-icons=3  group-containers=5\n   → Compare these counts to what you intended. A low count after export = truncation.",
+  "layout": {
+    "score": 100,
+    "subscores": {
+      "geometry": 100,
+      "design": 100
+    },
+    "counts": {
+      "vertices": 39,
+      "icons": 3,
+      "edges": 5
+    },
+    "findings": [],
+    "threshold": 80,
+    "pass": true
+  },
+  "canvas": {
+    "width": 1600,
+    "height": 1000,
+    "png_scale": 2
+  },
+  "sources": [
+    "static/workshop.yaml",
+    "scripts/cloud/README.md",
+    "content/module5-training/index.ko.md",
+    "content/module7-device/index.ko.md"
+  ],
+  "icons": "Official AWS architecture shapes from draw.io mxgraph.aws4",
+  "visual_review": {
+    "date": "2026-09-09",
+    "status": "PASS",
+    "independent_reviewer": true,
+    "scope": "Six PNG illustrations and offline HTML static verification",
+    "rubric": "Non-HTML: 55 base + 35 extension points; pass threshold 77",
+    "score": 90,
+    "maximum": 90,
+    "unresolved_findings": [],
+    "limitations": [
+      "Live browser clicks, focus, mobile rendering and print output not verified: browser provider initialization failed."
+    ]
+  },
+  "png_pixels": [
+    3202,
+    2002
+  ]
+}
