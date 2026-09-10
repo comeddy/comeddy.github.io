@@ -1,0 +1,47 @@
+[
+  {
+    "path": "static/images/aws-architecture.drawio",
+    "bytes": 18669,
+    "sha256": "b80a273d6b8ca9840a360fcff3fa1f528206d2965563e3053bb45b022326e2f0"
+  },
+  {
+    "path": "static/images/aws-architecture.png",
+    "bytes": 850722,
+    "sha256": "ae4c305cee086bf4b678dd1bbc0c74edc0ce3b8abd865d5bf1ce9d56fbd7de6b"
+  },
+  {
+    "path": "static/images/aws-architecture.svg",
+    "bytes": 1174869,
+    "sha256": "718de936cddb19f6f05cb10d54ad7cce984ce879dd2c7c0e7ca6fb47789d843e"
+  },
+  {
+    "path": "static/images/biped-poster.png",
+    "bytes": 70171,
+    "sha256": "f908b52bd58d3a95a0c9a5a4b0ef9e59dd20e83bcf740a1e20f8262019c9903f"
+  },
+  {
+    "path": "static/images/biped-poster.svg",
+    "bytes": 29791,
+    "sha256": "4ea1d6171fbde13756545ed557f449ded9be53a91a10677b7906ff9079b4cae9"
+  },
+  {
+    "path": "static/images/learning-loop.svg",
+    "bytes": 6801,
+    "sha256": "2909a95c710861cf14269a3520f5be078a798b944b11f2548cd5a6a6452363d0"
+  },
+  {
+    "path": "static/images/observation-action.svg",
+    "bytes": 5509,
+    "sha256": "43ce6a1ff9c5de0869f08ebe1634ac3011b259946e671d450bbf8b8e9a969cef"
+  },
+  {
+    "path": "static/images/sim-to-real-gates.svg",
+    "bytes": 7436,
+    "sha256": "6d713e2b8a6838af357184678630f2dee24edb75a4e4abb313fdb13b376d6fa6"
+  },
+  {
+    "path": "static/visuals/biped-3d.html",
+    "bytes": 52769,
+    "sha256": "694b8122af2ee4824ce98811fbbc0d96b7b2b98e5f2457e00e959d28e9ff5f3e"
+  }
+]

@@ -1,0 +1,12 @@
+version: 2.0
+defaultLocaleCode: ko-KR
+localeCodes:
+  - ko-KR
+params:
+  workshop_title: "Physical AI: From Cloud to Robot — Microduck"
+  workshop_duration: "사전 준비 + 1일 / 보행 수렴·실물 검증은 추가 시간"
+awsAccountConfig:
+  accountSources:
+    - customer_provided
+# BYOA: AMI·GPU quota·capacity 확인 후 scripts/cloud/manage.py로 명시 배포.
+# Workshop Studio 행사 제공 계정은 GPU 및 SSM 사용 허용을 운영자가 별도 확인.

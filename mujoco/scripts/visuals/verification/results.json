@@ -1,0 +1,181 @@
+{
+  "checks": 43,
+  "passed": 43,
+  "results": [
+    {
+      "check": "learning-loop.svg is parseable SVG",
+      "result": "PASS"
+    },
+    {
+      "check": "learning-loop.svg contains no remote image",
+      "result": "PASS"
+    },
+    {
+      "check": "sim-to-real-gates.svg is parseable SVG",
+      "result": "PASS"
+    },
+    {
+      "check": "sim-to-real-gates.svg contains no remote image",
+      "result": "PASS"
+    },
+    {
+      "check": "observation-action.svg is parseable SVG",
+      "result": "PASS"
+    },
+    {
+      "check": "observation-action.svg contains no remote image",
+      "result": "PASS"
+    },
+    {
+      "check": "biped-poster.svg is parseable SVG",
+      "result": "PASS"
+    },
+    {
+      "check": "biped-poster.svg contains no remote image",
+      "result": "PASS"
+    },
+    {
+      "check": "aws-architecture.svg is parseable SVG",
+      "result": "PASS"
+    },
+    {
+      "check": "aws-architecture.svg contains no remote image",
+      "result": "PASS"
+    },
+    {
+      "check": "No replacement glyphs in owned sources",
+      "result": "PASS"
+    },
+    {
+      "check": "Standalone inline CSS and JavaScript",
+      "result": "PASS"
+    },
+    {
+      "check": "No runtime network or parent navigation APIs",
+      "result": "PASS"
+    },
+    {
+      "check": "Explicit conceptual limitations",
+      "result": "PASS"
+    },
+    {
+      "check": "One VPC, AZ, public subnet and GPU instance",
+      "result": "PASS"
+    },
+    {
+      "check": "GPU is inside public subnet",
+      "result": "PASS"
+    },
+    {
+      "check": "No cloud-to-motor edge",
+      "result": "PASS"
+    },
+    {
+      "check": "S3 outside the VPC",
+      "result": "PASS"
+    },
+    {
+      "check": "Exactly six meaningful architecture edges",
+      "result": "PASS"
+    },
+    {
+      "check": "Canvas enabled, six native sliders",
+      "result": "PASS"
+    },
+    {
+      "check": "All sliders labelled",
+      "result": "PASS"
+    },
+    {
+      "check": "Initial canvas has rendered pixels",
+      "result": "PASS"
+    },
+    {
+      "check": "Keyboard changes joint angle",
+      "result": "PASS"
+    },
+    {
+      "check": "Joint change redraws geometry",
+      "result": "PASS"
+    },
+    {
+      "check": "Reset restores default pose",
+      "result": "PASS"
+    },
+    {
+      "check": "Arrow key orbits camera",
+      "result": "PASS"
+    },
+    {
+      "check": "Home restores default camera",
+      "result": "PASS"
+    },
+    {
+      "check": "Pointer drag orbits camera",
+      "result": "PASS"
+    },
+    {
+      "check": "View buttons change camera",
+      "result": "PASS"
+    },
+    {
+      "check": "Zoom button announces scale",
+      "result": "PASS"
+    },
+    {
+      "check": "Preset is a static pose",
+      "result": "PASS"
+    },
+    {
+      "check": "Reset restores labels",
+      "result": "PASS"
+    },
+    {
+      "check": "Reduced motion: no animations or RAF loop",
+      "result": "PASS"
+    },
+    {
+      "check": "Desktop has no horizontal overflow",
+      "result": "PASS"
+    },
+    {
+      "check": "390px mobile has no horizontal overflow",
+      "result": "PASS"
+    },
+    {
+      "check": "No browser errors",
+      "result": "PASS",
+      "detail": []
+    },
+    {
+      "check": "No network requests while offline",
+      "result": "PASS",
+      "detail": []
+    },
+    {
+      "check": "sandbox=allow-scripts srcdoc works",
+      "result": "PASS"
+    },
+    {
+      "check": "Embedding does not navigate parent",
+      "result": "PASS"
+    },
+    {
+      "check": "no-javascript static fallback visible",
+      "result": "PASS"
+    },
+    {
+      "check": "no-javascript controls remain disabled",
+      "result": "PASS"
+    },
+    {
+      "check": "no-canvas static fallback visible",
+      "result": "PASS"
+    },
+    {
+      "check": "no-canvas controls remain disabled",
+      "result": "PASS"
+    }
+  ],
+  "scope": "Visual structure and Chromium browser behavior; not robotics, dynamics, training or deployment validation."
+}

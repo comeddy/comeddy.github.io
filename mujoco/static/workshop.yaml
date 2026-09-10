@@ -1,0 +1,534 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Microduck workshop: one DLAMI GPU training host with SSM access and retained private artifacts.",
+  "Metadata": {
+    "Workshop": "physical-ai-from-cloud-to-robot",
+    "ContractVersion": "1"
+  },
+  "Parameters": {
+    "AmiId": {
+      "Type": "AWS::EC2::Image::Id",
+      "Description": "User-selected Amazon-owned GPU DLAMI, Ubuntu 22.04 or 24.04, x86_64 HVM EBS. Validate with scripts/cloud/manage.py; no default AMI."
+    },
+    "InstanceType": {
+      "Type": "String",
+      "Default": "g6.2xlarge",
+      "AllowedValues": [
+        "g6.2xlarge",
+        "g6.4xlarge"
+      ],
+      "Description": "One NVIDIA L4 GPU. Capacity for 4096 parallel training environments is unverified."
+    },
+    "AvailabilityZone": {
+      "Type": "AWS::EC2::AvailabilityZone::Name",
+      "Description": "Regional AZ verified to offer the selected instance type; not a capacity guarantee."
+    },
+    "RootDeviceName": {
+      "Type": "String",
+      "AllowedValues": [
+        "/dev/sda1",
+        "/dev/xvda"
+      ],
+      "Description": "Exact root device read from the validated AMI by manage.py."
+    }
+  },
+  "Resources": {
+    "WorkshopVpc": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.77.0.0/16",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": "${AWS::StackName}-vpc"
+            }
+          },
+          {
+            "Key": "Workshop",
+            "Value": "physical-ai-from-cloud-to-robot"
+          }
+        ]
+      }
+    },
+    "InternetGateway": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": "${AWS::StackName}-igw"
+            }
+          },
+          {
+            "Key": "Workshop",
+            "Value": "physical-ai-from-cloud-to-robot"
+          }
+        ]
+      }
+    },
+    "GatewayAttachment": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "WorkshopVpc"
+        },
+        "InternetGatewayId": {
+          "Ref": "InternetGateway"
+        }
+      }
+    },
+    "PublicSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "WorkshopVpc"
+        },
+        "CidrBlock": "10.77.1.0/24",
+        "AvailabilityZone": {
+          "Ref": "AvailabilityZone"
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": "${AWS::StackName}-public"
+            }
+          },
+          {
+            "Key": "Workshop",
+            "Value": "physical-ai-from-cloud-to-robot"
+          }
+        ]
+      }
+    },
+    "PublicRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "WorkshopVpc"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": "${AWS::StackName}-public"
+            }
+          },
+          {
+            "Key": "Workshop",
+            "Value": "physical-ai-from-cloud-to-robot"
+          }
+        ]
+      }
+    },
+    "InternetRoute": {
+      "Type": "AWS::EC2::Route",
+      "DependsOn": "GatewayAttachment",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PublicRouteTable"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        }
+      }
+    },
+    "SubnetRouteAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PublicRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "PublicSubnet"
+        }
+      }
+    },
+    "HostSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "No inbound ports; outbound HTTPS plus HTTP for Ubuntu APT mirrors.",
+        "VpcId": {
+          "Ref": "WorkshopVpc"
+        },
+        "SecurityGroupIngress": [],
+        "SecurityGroupEgress": [
+          {
+            "Description": "HTTPS egress via public IPv4 and IGW",
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "Description": "HTTP for Ubuntu APT mirrors; APT verifies signed repository metadata and package hashes",
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": "${AWS::StackName}-ssm-only"
+            }
+          },
+          {
+            "Key": "Workshop",
+            "Value": "physical-ai-from-cloud-to-robot"
+          }
+        ]
+      }
+    },
+    "ArtifactBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Id": "AbortIncompleteMultipartUploads",
+              "Status": "Enabled",
+              "AbortIncompleteMultipartUpload": {
+                "DaysAfterInitiation": 7
+              }
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": "${AWS::StackName}-artifacts"
+            }
+          },
+          {
+            "Key": "Workshop",
+            "Value": "physical-ai-from-cloud-to-robot"
+          }
+        ]
+      }
+    },
+    "ArtifactBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ArtifactBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "DenyInsecureTransport",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "s3:*",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ArtifactBucket",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${ArtifactBucket.Arn}/*"
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "HostRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Sub": "ec2.${AWS::URLSuffix}"
+                }
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+          }
+        ],
+        "Policies": [
+          {
+            "PolicyName": "WorkshopArtifacts",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:ListBucket",
+                    "s3:GetBucketLocation",
+                    "s3:ListBucketMultipartUploads"
+                  ],
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "ArtifactBucket",
+                      "Arn"
+                    ]
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "${ArtifactBucket.Arn}/workshop/*"
+                    },
+                    {
+                      "Fn::Sub": "${ArtifactBucket.Arn}/runs/*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject",
+                    "s3:AbortMultipartUpload",
+                    "s3:ListMultipartUploadParts"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "${ArtifactBucket.Arn}/runs/*"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": "${AWS::StackName}-host-role"
+            }
+          },
+          {
+            "Key": "Workshop",
+            "Value": "physical-ai-from-cloud-to-robot"
+          }
+        ]
+      }
+    },
+    "HostInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Roles": [
+          {
+            "Ref": "HostRole"
+          }
+        ]
+      }
+    },
+    "TrainingInstance": {
+      "Type": "AWS::EC2::Instance",
+      "DependsOn": [
+        "InternetRoute",
+        "SubnetRouteAssociation",
+        "ArtifactBucketPolicy"
+      ],
+      "Properties": {
+        "ImageId": {
+          "Ref": "AmiId"
+        },
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
+        "IamInstanceProfile": {
+          "Ref": "HostInstanceProfile"
+        },
+        "NetworkInterfaces": [
+          {
+            "AssociatePublicIpAddress": true,
+            "DeviceIndex": "0",
+            "SubnetId": {
+              "Ref": "PublicSubnet"
+            },
+            "GroupSet": [
+              {
+                "Ref": "HostSecurityGroup"
+              }
+            ]
+          }
+        ],
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": {
+              "Ref": "RootDeviceName"
+            },
+            "Ebs": {
+              "VolumeSize": 150,
+              "VolumeType": "gp3",
+              "Encrypted": true,
+              "DeleteOnTermination": true
+            }
+          }
+        ],
+        "InstanceInitiatedShutdownBehavior": "stop",
+        "PropagateTagsToVolumeOnCreation": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": "${AWS::StackName}-training"
+            }
+          },
+          {
+            "Key": "Workshop",
+            "Value": "physical-ai-from-cloud-to-robot"
+          }
+        ],
+        "LaunchTemplate": {
+          "LaunchTemplateId": {
+            "Ref": "HostLaunchTemplate"
+          },
+          "Version": {
+            "Fn::GetAtt": [
+              "HostLaunchTemplate",
+              "LatestVersionNumber"
+            ]
+          }
+        }
+      }
+    },
+    "HostLaunchTemplate": {
+      "Type": "AWS::EC2::LaunchTemplate",
+      "Properties": {
+        "LaunchTemplateData": {
+          "MetadataOptions": {
+            "HttpEndpoint": "enabled",
+            "HttpTokens": "required",
+            "HttpPutResponseHopLimit": 1,
+            "InstanceMetadataTags": "disabled"
+          }
+        },
+        "TagSpecifications": [
+          {
+            "ResourceType": "launch-template",
+            "Tags": [
+              {
+                "Key": "Name",
+                "Value": {
+                  "Fn::Sub": "${AWS::StackName}-metadata"
+                }
+              },
+              {
+                "Key": "Workshop",
+                "Value": "physical-ai-from-cloud-to-robot"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "WorkshopMarker": {
+      "Description": "Ownership marker for this workshop contract.",
+      "Value": "physical-ai-from-cloud-to-robot"
+    },
+    "TrainingInstanceId": {
+      "Description": "Use AWS Systems Manager Session Manager; no SSH key or inbound ports.",
+      "Value": {
+        "Ref": "TrainingInstance"
+      }
+    },
+    "ArtifactBucketName": {
+      "Description": "Private versioned bucket retained after stack deletion. Delete versions manually only when intended.",
+      "Value": {
+        "Ref": "ArtifactBucket"
+      }
+    },
+    "ArtifactBucketArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ArtifactBucket",
+          "Arn"
+        ]
+      }
+    },
+    "VpcId": {
+      "Value": {
+        "Ref": "WorkshopVpc"
+      }
+    },
+    "SubnetId": {
+      "Value": {
+        "Ref": "PublicSubnet"
+      }
+    },
+    "SecurityGroupId": {
+      "Value": {
+        "Ref": "HostSecurityGroup"
+      }
+    },
+    "AvailabilityZone": {
+      "Value": {
+        "Ref": "AvailabilityZone"
+      }
+    },
+    "InstanceRoleArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "HostRole",
+          "Arn"
+        ]
+      }
+    }
+  }
+}

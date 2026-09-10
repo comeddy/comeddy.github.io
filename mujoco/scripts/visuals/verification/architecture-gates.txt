@@ -1,0 +1,5 @@
+✅ physical-ai-from-cloud-to-robot/static/images/aws-architecture.drawio: XML valid, no silent-killer patterns.
+   cells=41  vertices=33  edges=6  aws4-icons=4  group-containers=4
+   → Compare these counts to what you intended. A low count after export = truncation.
+
+✅ physical-ai-from-cloud-to-robot/static/images/aws-architecture.drawio: layout score 100/100 (gate 80) [geometry 100 · design 100] — icons=4 edges=6 vertices=33

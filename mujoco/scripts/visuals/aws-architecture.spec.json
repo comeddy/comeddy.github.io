@@ -1,0 +1,13 @@
+{
+  "title": "Physical AI: From Cloud to Robot",
+  "external": [{"id":"learner","icon":"user","label":"학습자 · 브라우저 + AWS CLI"}],
+  "region": {
+    "label":"AWS Region · 실습에서 선택한 단일 리전",
+    "vpc": {
+      "label":"단일 VPC",
+      "azs":["단일 Availability Zone"],
+      "tiers":[{"name":"Public subnet · 단일 서브넷","kind":"public","services":[{"id":"gpu","icon":"ec2","label":"GPU EC2 · NVIDIA L4"}]}]
+    }
+  },
+  "flows":[]
+}

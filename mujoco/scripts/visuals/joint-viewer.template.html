@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="오프라인 교육용 이족 로봇 기하 뷰어. 독자 제작 상자·원통의 관절각을 조절합니다. 실제 Microduck 형상·동역학·정책 재생이 아닙니다.">
+<title>관절을 움직이며 이해하기 · Physical AI</title>
+<style>
+:root{color-scheme:light;--paper:#f5f6f0;--ink:#143f43;--muted:#526c67;--line:#d6e1db;--yellow:#f0d160;--white:#fff;font-family:Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Noto Sans CJK KR",system-ui,sans-serif;color:var(--ink);background:var(--paper)}
+*{box-sizing:border-box}body{margin:0}button,input{font:inherit}button{cursor:pointer}button:disabled,input:disabled{cursor:not-allowed}[hidden]{display:none!important}
+main{max-width:1440px;padding:36px 40px 24px;margin:auto}.kicker{font-size:12px;letter-spacing:.12em;font-weight:750;margin:0 0 18px}h1{font-size:clamp(28px,3.3vw,45px);letter-spacing:-.05em;line-height:1.22;margin:0 0 14px}header p{color:var(--muted);font-size:16px;line-height:1.65;margin:0;max-width:960px}.badge{display:inline-flex;gap:7px;background:#fff5ca;border:1px solid #e2cb70;padding:8px 12px;border-radius:100px;font-size:12px;font-weight:650;margin-top:17px}
+.workspace{margin-top:26px;display:grid;grid-template-columns:minmax(0,1fr) 352px;gap:22px;align-items:start}.stage{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:22px;overflow:hidden}.stage-title{position:absolute;left:22px;top:18px;font-size:12px;font-weight:700;letter-spacing:.09em;z-index:1;pointer-events:none}.stage-note{padding:13px 20px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.5;background:#ffffff80}
+canvas{display:block;width:100%;height:590px;touch-action:none;cursor:grab}canvas:active{cursor:grabbing}#fallback svg{width:100%;height:auto;display:block}#fallback p{margin:0;padding:16px;line-height:1.5}#fallback svg text:first-of-type{visibility:hidden}
+:focus-visible{outline:3px solid #216b77;outline-offset:4px}canvas:focus-visible{outline-offset:-6px;border-radius:21px}
+fieldset{border:0;padding:0;margin:0;min-width:0}legend{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.panel{border:1px solid var(--line);border-radius:20px;background:var(--white);padding:22px}.panel+.panel{margin-top:14px}h2{font-size:18px;letter-spacing:-.03em;margin:0 0 7px}.hint{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 14px}.side-heading{font-size:11px;font-weight:750;letter-spacing:.10em;color:var(--muted);margin:19px 0 9px}.joint{margin:0 0 12px}.joint-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}.joint label{font-size:13px;font-weight:600}.joint output{font-size:13px;font-variant-numeric:tabular-nums;padding:2px 8px;border-radius:6px;background:var(--paper);min-width:49px;text-align:right}.joint input{display:block;width:100%;height:23px;accent-color:var(--ink);margin:0;cursor:pointer}.toolbar{display:flex;flex-wrap:wrap;gap:8px}.toolbar button{border:1px solid var(--line);background:var(--white);padding:10px 13px;border-radius:9px;font-size:12px;font-weight:600;min-height:40px}.toolbar button:hover{background:var(--paper);border-color:#8aaa9c}.toolbar button.primary{background:var(--ink);border-color:var(--ink);color:#fff}.toolbar button.primary:hover{background:#245c60}.checkbox{display:flex;align-items:center;gap:8px;font-size:12px;margin:14px 0 0}.checkbox input{width:17px;height:17px;accent-color:var(--ink)}
+.readout{padding:15px 0 0;font-size:12px;color:var(--muted);line-height:1.7}.readout p{margin:0}#pose-readout{font-variant-numeric:tabular-nums}.explainer{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px}.explainer article{border-top:1px solid var(--line);padding-top:17px}.explainer h2{font-size:16px}.explainer p{font-size:13px;line-height:1.7;color:var(--muted);margin:5px 0}.keys{font-size:12px!important}kbd{font:inherit;background:#e8eeea;border:1px solid var(--line);padding:1px 5px;border-radius:4px;color:var(--ink)}#status{font-size:12px;line-height:1.6;color:var(--muted);min-height:20px;margin:17px 0 0}footer{margin-top:19px;padding-top:16px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.6}a{color:var(--ink);text-underline-offset:3px}
+@media(min-width:1200px){canvas{height:630px}}@media(max-width:900px){main{padding:26px 22px}.workspace{grid-template-columns:minmax(0,1fr) 304px;gap:16px}canvas{height:555px}.panel{padding:17px}.stage-title{left:15px;font-size:10px}}@media(max-width:700px){main{padding:24px 16px}.workspace{grid-template-columns:1fr;margin-top:20px}canvas{height:440px}.explainer{grid-template-columns:1fr;gap:16px}.panel{padding:20px}.joint input{height:30px}.toolbar button{min-height:44px}.badge{font-size:11px}.stage-title{font-size:11px}.readout{font-size:11px}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<p class="kicker">PHYSICAL AI / HANDS-ON CONCEPT</p>
+<h1>관절을 움직이며 이해하기</h1>
+<p>각도를 바꾸면 다리의 기하 자세가 어떻게 달라질까요? 드래그로 둘러보고, 관절각을 한 개씩 조절해 보세요.</p>
+<span class="badge">독자 제작 교육용 모형 · 실제 Microduck 형상·동역학 아님</span>
+</header>
+<div class="workspace">
+<section aria-label="교육용 이족 모형과 현재 관절각">
+<div class="stage">
+<div class="stage-title">ORIGINAL GEOMETRY / BOXES + CYLINDERS</div>
+<canvas id="scene" hidden tabindex="0" role="img" aria-label="드래그 또는 방향키로 회전하는 교육용 이족 로봇 기하 모형" aria-describedby="keyboard-help model-limit">정지 그림과 관절 설명을 참고하세요.</canvas>
+<div id="fallback">%%POSTER%%<p>정지 그림입니다. JavaScript와 Canvas를 사용할 수 있으면 관절 조절 기능이 활성화됩니다.</p></div>
+<div class="stage-note">임의의 비검증 치수 · 실제 관절축·가동 범위 아님 · 지면 접촉·균형·중력 계산 없음</div>
+</div>
+<div class="readout" aria-label="현재 기하 관절각">
+<p>순서: 고관절 / 무릎 / 발목 · 표시 단위: 도(°)</p>
+<p id="pose-readout">왼쪽 [-8, 16, -8]° · 오른쪽 [-8, 16, -8]°</p>
+</div>
+</section>
+<fieldset id="controls" disabled>
+<legend>기하 모형 조작</legend>
+<div class="panel">
+<h2>관절각 q</h2><p class="hint">이 값은 표시용 각도입니다. 로봇 명령이나 실제 관절 제한값으로 사용하지 마세요.</p>
+%%JOINTS%%
+</div>
+<div class="panel">
+<h2>자세와 시점</h2>
+<div class="toolbar">
+<button type="button" id="front">정면</button><button type="button" id="side">측면</button><button type="button" id="pose-bend">굽힌 자세</button>
+<button type="button" id="zoom-in" aria-label="확대">확대 +</button><button type="button" id="zoom-out" aria-label="축소">축소 −</button><button type="button" class="primary" id="reset">처음으로</button>
+</div>
+<label class="checkbox"><input id="labels" type="checkbox" checked> 관절 이름 표시</label>
+</div>
+</fieldset>
+</div>
+<div class="explainer">
+<article><h2>각도와 관측을 구분해 보세요</h2><p>관측에는 관절각 q 외에도 관절 속도, 몸의 방향, 목표 속도 등이 들어갈 수 있습니다. 이 뷰어는 센서 데이터를 생성하지 않으며 관절 속도를 측정하지 않습니다.</p><p id="keyboard-help" class="keys">그림에 초점을 둔 뒤 <kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd> 회전 · <kbd>+</kbd> <kbd>−</kbd> 확대·축소 · <kbd>Home</kbd> 기본 시점. <kbd>Tab</kbd>으로 슬라이더를 선택하고 방향키로 각도를 바꿉니다.</p></article>
+<article><h2>이 그림이 보여 주는 범위</h2><p id="model-limit">상자와 원통으로 직접 만든 개념 모형입니다. 실제 Microduck의 메시·CAD·사진·체크포인트를 사용하지 않았습니다. 치수와 관절 범위는 검증되지 않았고, 정확한 동역학·시뮬레이션·정책 재생·로봇 연결을 제공하지 않습니다.</p><p>자동 움직임 없이 조작할 때만 다시 그립니다. 클라우드는 학습과 번들 보관을 담당하며, 실제 50Hz 모터 제어는 로컬 런타임에서 수행합니다.</p></article>
+</div>
+<p id="status" role="status" aria-live="polite">정지 그림이 준비되어 있습니다.</p>
+<footer>PHYSICAL AI: FROM CLOUD TO ROBOT · 오프라인 교육용 시각 자료 · 외부 라이브러리·CDN·네트워크 요청 없음</footer>
+</main>
+<script>%%SCRIPT%%</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+{
+  "verified_at": "2026-09-10",
+  "unit_tests": {
+    "passed": 109,
+    "failed": 0,
+    "skipped": 0,
+    "groups": {
+      "test_cloud": 31,
+      "test_distribution": 8,
+      "test_evaluate_sim": 23,
+      "test_policy_tools": 37,
+      "test_workflow": 10
+    },
+    "environment": {
+      "python": "3.12",
+      "onnx": "1.20.1",
+      "onnxruntime": "1.24.4",
+      "numpy": "2.5.3"
+    },
+    "log_sha256": "e0cc4627c2b862b0cda6a96c552fc67eb4433af3eef31141e2dbe399b22a2f38"
+  },
+  "cloudformation_lint": "passed",
+  "visual_checks": 20,
+  "site_browser_checks": 37,
+  "gpu_integration_executed": false,
+  "aws_deployment_executed": false,
+  "physical_robot_executed": false,
+  "upstream_robot_assets_in_distribution": false,
+  "external_published": false,
+  "historical_original_viewer_checks": {
+    "visual": 43,
+    "site": 15
+  },
+  "official_simulator": {
+    "url": "https://huggingface.co/spaces/pollen-robotics/microduck-simulator",
+    "embed_host": "https://pollen-robotics-microduck-simulator.hf.space",
+    "metadata_observed_commit": "e81974b932c7ca1819843b7bb3dcd42e2993e98e",
+    "runtime_is_provider_managed": true,
+    "browser_3d_rendered": true,
+    "keyboard_movement_observed": true,
+    "odometer_m": 0.1,
+    "javascript_errors": 0,
+    "mobile_touch_control_tested": false,
+    "provider_assets_bundled": false,
+    "rechecked_with_concept_viewer": true
+  },
+  "historical_official_only_site_checks": 28,
+  "concept_viewer_checks": 43,
+  "explanatory_images": 8,
+  "new_3d_figures": [
+    "joint-chain-3d.svg",
+    "policy-step-3d.svg",
+    "sim-to-real-3d.svg"
+  ],
+  "concept_viewer_url": "static/visuals/joint-concepts-3d.html"
+}
