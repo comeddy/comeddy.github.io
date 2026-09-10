@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>금융권 고객 대상 Claude Code Deep Dive 워크샵 — 2일 과정 소개</title>
+<meta name="description" content="금융권(FSI) 고객 대상 Anthropic × AWS 2일 워크샵. 5개 챕터와 2번의 캡스톤으로 Claude Code를 개인 도구에서 팀 플랫폼으로.">
+<link rel="icon" href="favicon.ico" sizes="16x16 32x32" type="image/x-icon">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+:root{
+  /* --- Amazon / AWS brand palette --- */
+  --squid:#232F3E;        /* Squid Ink — primary dark */
+  --squid-900:#161E2D;
+  --squid-700:#37475A;
+  --orange:#FF9900;       /* Smile Orange — graphics & CTA only */
+  --orange-600:#EC7211;
+  --orange-ink:#8A5000;   /* AA-safe orange for text on white */
+  --orange-50:#FFF6EB;
+  --orange-100:#FFE4C2;
+  --blue:#0972D3;         /* Amazon Blue — links / secondary */
+  --blue-ink:#0F4C99;
+
+  --bg:#FFFFFF; --surface:#FFFFFF; --sunken:#F2F3F3;
+  --text:#16191F; --text-2:#414D5C; --text-3:#5F6B7A;
+  --line:#E9EBED; --line-2:#D5DBDB;
+  --on-dark:#FFFFFF; --on-dark-2:#C6CDD5;
+
+  --shadow-card:0 1px 1px rgba(22,25,31,.05), 0 4px 14px rgba(22,25,31,.07);
+  --maxw:1140px;
+  --sans:"Amazon Ember","Pretendard Variable",Pretendard,-apple-system,system-ui,"Malgun Gothic",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  --r:8px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);
+  font-size:16px;line-height:1.66;-webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums lining-nums}
+img,svg{max-width:100%}
+a{color:var(--blue-ink);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:2px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip-link{position:absolute;left:12px;top:-48px;z-index:100;background:var(--orange);color:var(--squid-900);
+  padding:10px 16px;border-radius:var(--r);font-size:14px;font-weight:700;transition:top .15s}
+.skip-link:focus{top:12px}
+
+/* ---------- nav (Squid Ink bar) ---------- */
+.nav{position:sticky;top:0;z-index:50;background:var(--squid);border-bottom:3px solid var(--orange)}
+.nav-in{max-width:var(--maxw);margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:20px}
+.brand{font-size:13.5px;font-weight:700;letter-spacing:.02em;color:#fff;white-space:nowrap}
+.nav-links{margin-left:auto;display:flex;align-items:center;gap:22px}
+.nav-links a{font-size:14px;color:var(--on-dark-2);font-weight:500}
+.nav-links a:hover{color:#fff;text-decoration:none}
+.nav :focus-visible{outline-color:var(--orange)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:42px;padding:11px 22px;border-radius:var(--r);font-size:14.5px;font-weight:700;
+  border:1px solid transparent;transition:background .15s,color .15s,border-color .15s}
+.btn-primary{background:var(--orange);color:var(--squid-900)}
+.btn-primary:hover{background:var(--orange-600);color:#fff;text-decoration:none}
+.btn-ghost{border-color:var(--line-2);color:var(--text);background:#fff}
+.btn-ghost:hover{border-color:var(--squid);background:var(--sunken);color:var(--text);text-decoration:none}
+.nav .btn{padding:9px 16px;min-height:38px;font-size:13.5px}
+
+/* ---------- section frame ---------- */
+section{padding:74px 0}
+.eyebrow{font-family:var(--mono);font-size:11.5px;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--blue-ink);margin:0 0 14px}
+h2{font-size:clamp(24px,3.2vw,34px);line-height:1.24;font-weight:700;letter-spacing:-.015em;
+  margin:0 0 12px;color:var(--squid)}
+.lede{color:var(--text-2);max-width:62ch;margin:0 0 34px;font-size:16.5px}
+
+/* ---------- hero (dark Squid Ink band) ---------- */
+.hero{padding:88px 0 74px;color:var(--on-dark);
+  background:linear-gradient(160deg,#232F3E 0%,#1B2735 55%,#161E2D 100%);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-140px;top:-120px;width:520px;height:520px;
+  border-radius:50%;background:radial-gradient(circle,rgba(255,153,0,.16) 0%,transparent 68%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:700;
+  color:var(--orange);background:rgba(255,153,0,.12);border:1px solid rgba(255,153,0,.42);
+  padding:7px 15px;border-radius:var(--r);margin:0 0 24px}
+h1{font-size:clamp(33px,5.6vw,58px);line-height:1.14;font-weight:700;letter-spacing:-.025em;
+  margin:0 0 20px;max-width:20ch;color:#fff}
+.hero-sub{font-size:clamp(16.5px,1.9vw,19px);color:var(--on-dark-2);max-width:60ch;margin:0 0 32px}
+.hero-sub strong{color:#fff;font-weight:700}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 28px}
+.metric{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);
+  border-radius:var(--r);padding:18px 20px}
+.metric b{display:block;font-size:31px;font-weight:700;line-height:1;
+  letter-spacing:-.02em;color:var(--orange)}
+.metric span{display:block;margin-top:8px;font-size:12.5px;color:var(--on-dark-2);font-weight:500}
+.factline{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14.5px;color:var(--on-dark-2);margin:0 0 30px}
+.factline span{display:inline-flex;align-items:center;gap:8px}
+.factline span::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--orange)}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px}
+.hero .btn-ghost{background:transparent;border-color:rgba(255,255,255,.4);color:#fff}
+.hero .btn-ghost:hover{background:rgba(255,255,255,.1);border-color:#fff;color:#fff}
+.hero :focus-visible{outline-color:var(--orange)}
+
+/* ---------- arc ---------- */
+.arc{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;
+  background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);
+  box-shadow:var(--shadow-card);overflow:hidden}
+.arc-day{padding:26px 28px;border-top:4px solid var(--orange)}
+.arc-mid{display:flex;align-items:center;justify-content:center;width:64px;
+  background:var(--sunken);border-left:1px solid var(--line);border-right:1px solid var(--line);
+  font-family:var(--mono);font-size:18px;color:var(--squid);font-weight:600}
+.arc-tag{font-size:12.5px;font-weight:700;letter-spacing:.03em;color:var(--blue-ink);margin:0 0 8px}
+.arc-day h3{font-size:19px;font-weight:700;margin:0 0 8px;letter-spacing:-.01em;color:var(--squid)}
+.arc-day p{margin:0 0 14px;font-size:14.5px;color:var(--text-2)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0;margin:0}
+.chips li{font-size:12.5px;font-weight:600;color:var(--text-2);
+  background:var(--sunken);border:1px solid var(--line-2);border-radius:4px;padding:4px 9px}
+
+/* ---------- pillars ---------- */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);
+  padding:24px;box-shadow:var(--shadow-card)}
+.card h3{font-size:17px;font-weight:700;margin:0 0 9px;letter-spacing:-.01em;color:var(--squid)}
+.card p{margin:0;font-size:14.5px;color:var(--text-2)}
+.card .num{font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--orange-ink);
+  letter-spacing:.1em;display:block;margin-bottom:12px}
+
+/* ---------- agenda ---------- */
+.days{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.day{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);
+  box-shadow:var(--shadow-card);overflow:hidden}
+.day-head{padding:20px 26px;background:var(--squid);color:#fff}
+.day-head .k{font-size:13px;font-weight:700;letter-spacing:.03em;color:var(--orange)}
+.day-head h3{font-size:20px;font-weight:700;margin:6px 0 4px;letter-spacing:-.015em;color:#fff}
+.day-head p{margin:0;font-size:13.5px;color:var(--on-dark-2)}
+.agenda{list-style:none;margin:0;padding:6px 0}
+.agenda li{display:grid;grid-template-columns:90px 1fr;gap:14px;padding:13px 26px;
+  border-bottom:1px solid var(--line)}
+.agenda li:last-child{border-bottom:0}
+.agenda .t{font-family:var(--mono);font-size:12.5px;color:var(--text-3);padding-top:2px;white-space:nowrap}
+.agenda .code{display:inline-block;font-family:var(--mono);font-size:10.5px;font-weight:600;
+  letter-spacing:.1em;color:#fff;background:var(--squid);border-radius:3px;
+  padding:2px 7px;margin-right:8px;white-space:nowrap;vertical-align:1px}
+.agenda .ttl{font-size:14.5px;font-weight:600;line-height:1.5;color:var(--text)}
+.agenda .d{display:block;font-size:13.5px;color:var(--text-3);font-weight:400;margin-top:3px}
+.agenda li.hi{background:var(--orange-50);box-shadow:inset 4px 0 0 var(--orange)}
+.agenda li.hi .code{background:var(--orange-600)}
+.agenda li.soft .ttl{font-weight:500;color:var(--text-3);font-size:14px}
+
+/* ---------- missions ---------- */
+.grid-mission{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.mission{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);
+  padding:20px;border-top:3px solid var(--line-2)}
+.mission .r{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text-3);display:block;margin-bottom:8px}
+.mission h3{font-size:16px;font-weight:700;margin:0 0 7px;color:var(--squid)}
+.mission p{margin:0;font-size:13.5px;color:var(--text-2)}
+.mission.r2{border-top-color:var(--orange);background:var(--orange-50)}
+.mission.r2 .r{color:var(--orange-ink)}
+
+/* ---------- env table ---------- */
+table{width:100%;border-collapse:collapse;background:var(--surface);
+  border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden;font-size:14.5px}
+caption{text-align:left;font-size:13.5px;color:var(--text-3);padding-bottom:10px}
+thead th{background:var(--squid);color:#fff;font-size:12.5px;letter-spacing:.06em;
+  text-transform:uppercase;font-weight:700}
+th,td{text-align:left;padding:15px 20px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child th,tr:last-child td{border-bottom:0}
+tbody th{width:180px;font-weight:700;font-size:14px;white-space:nowrap;color:var(--squid)}
+td{color:var(--text-2)}
+td .m{font-family:var(--mono);font-size:13px;color:var(--text)}
+
+/* ---------- closing cta ---------- */
+.close{background:linear-gradient(160deg,#232F3E 0%,#161E2D 100%);color:#fff;
+  border-radius:var(--r);padding:56px 40px;text-align:center;border-top:4px solid var(--orange)}
+.close h2{color:#fff;margin:0 auto 14px;max-width:24ch}
+.close p{color:var(--on-dark-2);margin:0 auto 28px;max-width:54ch;font-size:16.5px}
+.close .eyebrow{color:var(--orange)}
+.close .cta-row{justify-content:center}
+.close .btn-ghost{background:transparent;border-color:rgba(255,255,255,.4);color:#fff}
+.close .btn-ghost:hover{background:rgba(255,255,255,.1);border-color:#fff;color:#fff}
+.close :focus-visible{outline-color:var(--orange)}
+
+footer{border-top:1px solid var(--line-2);background:var(--sunken);
+  padding:34px 0 54px;font-size:13.5px;color:var(--text-3)}
+footer p{margin:0 0 8px}
+footer strong{color:var(--squid)}
+footer .fmono{font-size:13px}
+footer .note{margin-top:18px;padding-top:16px;border-top:1px solid var(--line-2);
+  color:var(--text-2);font-size:13.5px}
+footer .note::before{content:"※ ";color:var(--orange-600)}
+
+/* ---------- tablet ---------- */
+@media (max-width:1024px){
+  .grid-3,.grid-mission{grid-template-columns:repeat(2,1fr)}
+  .days{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  section{padding:60px 0}
+}
+/* ---------- mobile ---------- */
+@media (max-width:640px){
+  .wrap,.nav-in{padding-left:18px;padding-right:18px}
+  .nav-links a{display:none}
+  .hero{padding:60px 0 52px}
+  .grid-3,.grid-mission{grid-template-columns:1fr}
+  .arc{grid-template-columns:1fr}
+  .arc-mid{width:auto;height:42px;border-left:0;border-right:0;font-size:0;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .arc-mid::before{content:"↓";font-size:18px;line-height:1}
+  .agenda li{grid-template-columns:1fr;gap:4px;padding:13px 20px}
+  .day-head{padding:18px 20px}
+  .cta-row .btn{width:100%}
+  .close{padding:42px 22px}
+  /* table → stacked cards */
+  table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  table,table tbody,table tr{display:block;width:100%}
+  table tr{border-bottom:1px solid var(--line);padding:14px 18px}
+  table tr:last-child{border-bottom:0}
+  th,td{display:block;border:0;padding:0;width:auto}
+  tbody th{margin-bottom:4px;width:auto}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+section[id]{scroll-margin-top:64px}
+
+/* --- 설문조사 --- */
+.survey-card{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:28px 44px;
+  background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);
+  padding:32px 36px;box-shadow:var(--shadow-card)}
+.survey-card img{width:200px;height:200px;border:1px solid var(--line);border-radius:var(--r);background:#fff}
+.survey-info{max-width:46ch;text-align:center}
+.survey-info p{margin:0 0 16px;color:var(--text-2)}
+.survey-info .fmono{margin:16px 0 0;font-family:var(--mono);font-size:13px;color:var(--text-3)}
+
+/* --- 화이트모드: 프로젝터 저조도 대비 고대비 라이트 테마 --- */
+.mode-toggle{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;
+  font-family:var(--sans);color:var(--on-dark-2);background:transparent;
+  border:1px solid rgba(255,255,255,.35);border-radius:var(--r);padding:6px 13px;cursor:pointer}
+.mode-toggle:hover{color:#fff;border-color:#fff}
+body.white-mode{--text-2:#2A3541;--text-3:#3E4A59;--line:#C9CED4;--line-2:#AEB6BF}
+body.white-mode .mode-toggle{color:var(--squid);border-color:var(--squid-700)}
+body.white-mode .mode-toggle:hover{color:var(--squid-900);border-color:var(--squid-900)}
+body.white-mode .nav{background:#fff;border-bottom:3px solid var(--squid)}
+body.white-mode .brand{color:var(--squid)}
+body.white-mode .nav-links a{color:var(--squid-700)}
+body.white-mode .nav-links a:hover{color:var(--squid-900)}
+body.white-mode .nav-links a.btn-primary{background:var(--squid);color:#fff}
+body.white-mode .hero{background:#fff;color:var(--text);border-bottom:1px solid var(--line-2)}
+body.white-mode .hero::after{display:none}
+body.white-mode .hero h1,body.white-mode .hero-sub strong{color:var(--squid-900)}
+body.white-mode .hero-sub,body.white-mode .factline{color:var(--text-2)}
+body.white-mode .hero-badge{color:var(--orange-ink);background:var(--orange-50);border-color:var(--orange-100)}
+body.white-mode .metric{background:var(--sunken);border-color:var(--line-2)}
+body.white-mode .metric b{color:var(--orange-ink)}
+body.white-mode .metric span{color:var(--text-2)}
+body.white-mode .day-head{background:#fff;color:var(--squid-900);border-bottom:2px solid var(--squid)}
+body.white-mode .day-head .k{color:var(--orange-ink)}
+body.white-mode .day-head h3{color:var(--squid-900)}
+body.white-mode .day-head p{color:var(--text-2)}
+body.white-mode .agenda .code{background:#fff;color:var(--squid-900);box-shadow:inset 0 0 0 1.5px var(--squid)}
+body.white-mode .agenda li.hi .code{background:#fff;color:var(--orange-ink);box-shadow:inset 0 0 0 1.5px var(--orange-600)}
+body.white-mode thead th{background:#fff;color:var(--squid-900);border-bottom:2px solid var(--squid)}
+body.white-mode .close{background:#fff;color:var(--text);border-top:1px solid var(--line-2)}
+body.white-mode .close h2{color:var(--squid-900)}
+body.white-mode .close p{color:var(--text-2)}
+body.white-mode .close .eyebrow{color:var(--orange-ink)}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">본문으로 건너뛰기</a>
+
+<nav class="nav" aria-label="주요 메뉴">
+  <div class="nav-in">
+    <span class="brand">FSI × AWS</span>
+    <div class="nav-links">
+      <a href="#flow">과정 흐름</a>
+      <a href="#agenda">아젠다</a>
+      <a href="#capstone">캡스톤</a>
+      <a href="#env">교육 환경</a>
+      <a href="#slack">Slack</a>
+      <a href="#survey">설문조사</a>
+      <a class="btn btn-primary" href="index.html">Lab 포털</a>
+      <button class="mode-toggle" id="modeToggle" type="button" aria-pressed="false">화이트모드</button>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <p class="hero-badge">금융권 고객 대상 · Claude Code Deep Dive 워크샵</p>
+    <h1>개인의 도구에서 팀의 개발 플랫폼으로</h1>
+    <p class="hero-sub">Claude Code의 다음 논의는 기능이 아니라 운영입니다.
+      <strong>어디까지 권한을 허용할지, 사용량과 비용을 어떤 지표로 볼지, 검증된 방식을 어떻게 팀에 배포할지</strong>를
+      이틀에 걸쳐 순서대로 다룹니다.</p>
+
+    <div class="metrics">
+      <div class="metric"><b>2</b><span>Days · 양일 전일정</span></div>
+      <div class="metric"><b>5</b><span>Chapters + INTRO / FinOps</span></div>
+      <div class="metric"><b>6</b><span>Capstone Missions</span></div>
+      <div class="metric"><b>3</b><span>Models · Fable 5 / Opus 5 / Sonnet 5</span></div>
+    </div>
+
+    <p class="factline">
+      <span>2일 전일정 (일정은 고객사 협의 후 확정)</span>
+      <span>장소: 고객사 협의 후 확정</span>
+      <span>이론 + 핸즈온 + 캡스톤</span>
+    </p>
+
+    <div class="cta-row">
+      <a class="btn btn-primary" href="index.html">Hands-on Lab 포털 열기</a>
+      <a class="btn btn-ghost" href="#agenda">2일 아젠다 보기</a>
+    </div>
+  </div>
+</header>
+
+<!-- FLOW -->
+<section id="flow">
+  <div class="wrap">
+    <p class="eyebrow">Two Days, Two Completions</p>
+    <h2>이틀 동안 두 번 완결합니다</h2>
+    <p class="lede">이론과 실습을 같은 비중으로 배치했습니다. 각 날의 오전에 배운 것이 그날 오후 캡스톤의 재료가 되고,
+      Day 1에서 만든 에이전트와 Day 2에서 만든 훅·스킬이 그대로 다음 라운드에서 일합니다.</p>
+
+    <div class="arc">
+      <div class="arc-day">
+        <p class="arc-tag">Day 1</p>
+        <h3>개인 역량으로 첫 완결</h3>
+        <p>아키텍처와 설치·헤드리스에서 시작해 역할별 서브에이전트를 익히고, 정책 통제와 관측의 지도를 잡습니다.
+          오후에는 세 트랙 중 하나를 골라 설계부터 개장·공유까지 직접 완주합니다.</p>
+        <ul class="chips">
+          <li>INTRO 아키텍처</li><li>CH 01 설치·Headless</li><li>CH 02 Subagents</li>
+          <li>CH 03 Admin 브리핑</li><li>Capstone R1</li>
+        </ul>
+      </div>
+      <div class="arc-mid" aria-hidden="true">→</div>
+      <div class="arc-day">
+        <p class="arc-tag">Day 2</p>
+        <h3>AI 통합으로 두 번째 완결</h3>
+        <p>훅과 스킬을 팀 자산으로 승격하고 Claude Code를 파이프라인 부품으로 전환합니다.
+          오후에는 Bedrock 분석이 살아 있는 서비스를 하네스 엔지니어링까지 얹어 완주합니다.</p>
+        <ul class="chips">
+          <li>CH 04 Settings·Hooks·MCP</li><li>CH 05 CLI·CI</li>
+          <li>Capstone R2</li><li>FinOps</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PILLARS -->
+<section id="why" style="background:var(--sunken);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2)">
+  <div class="wrap">
+    <p class="eyebrow">Why this workshop</p>
+    <h2>세 가지 설계 원칙</h2>
+    <div class="grid-3">
+      <article class="card">
+        <span class="num">01</span>
+        <h3>운영의 언어로 다룹니다</h3>
+        <p>권한 범위, 사용량·비용 지표, 팀 배포 — 도입을 막는 질문은 대개 기능이 아니라 통제입니다.
+          managed-settings 정책선과 OpenTelemetry 관측을 지도로 잡습니다.</p>
+      </article>
+      <article class="card">
+        <span class="num">02</span>
+        <h3>배운 것을 그날 완결합니다</h3>
+        <p>강의로 끝나지 않습니다. 두 번의 캡스톤에서 계획 → 실행 → 커밋의 리듬으로
+          직접 만든 결과물을 개장하고 Slack에 공유합니다.</p>
+      </article>
+      <article class="card">
+        <span class="num">03</span>
+        <h3>참가 조직에 맞춥니다</h3>
+        <p>전 과정은 참가 조직의 환경과 과제에 맞추어 구성한 맞춤형 워크샵입니다.
+          Claude Enterprise와 Amazon Bedrock 두 경로를 나란히 비교합니다.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- AGENDA -->
+<section id="agenda">
+  <div class="wrap">
+    <p class="eyebrow">Agenda</p>
+    <h2>2일 아젠다</h2>
+    <p class="lede">양일 모두 10:00에 시작합니다. Day 1과 Day 2 모두 18:00에 랩업합니다.
+      강조된 블록이 그날의 캡스톤 라운드입니다.</p>
+
+    <div class="days">
+      <!-- DAY 1 -->
+      <article class="day">
+        <div class="day-head">
+          <span class="k">Day 1</span>
+          <h3>개인 역량으로 첫 완결</h3>
+          <p>10:00 – 18:00 / 이론 + 핸즈온 + 캡스톤 R1</p>
+        </div>
+        <ul class="agenda">
+          <li class="soft"><span class="t">10:00–10:10</span><span class="ttl">AWS 인사</span></li>
+          <li><span class="t">10:10–10:40</span><span class="ttl"><span class="code">INTRO</span>Claude Code 아키텍처 소개
+            <span class="d">에이전트 루프가 맥락을 읽고 도구를 고르는 구조부터</span></span></li>
+          <li><span class="t">10:40–11:20</span><span class="ttl"><span class="code">CH 01</span>설치부터 Headless 자동화까지
+            <span class="d">인증 경로 비교 · CLAUDE.md · Plan 모드 · 헤드리스 한 줄</span></span></li>
+          <li class="soft"><span class="t">11:20–13:00</span><span class="ttl">점심 식사</span></li>
+          <li><span class="t">13:00–13:40</span><span class="ttl"><span class="code">LAB 1</span>기본 환경 구성
+            <span class="d">설치·인증 → 첫 세션 → 헤드리스 재현</span></span></li>
+          <li><span class="t">13:40–14:20</span><span class="ttl"><span class="code">CH 02</span>Subagents, 전문 에이전트 지휘
+            <span class="d">역할·도구 권한 격리 · 자동 위임/@멘션/병렬 · Lab 2</span></span></li>
+          <li class="soft"><span class="t">14:20–14:30</span><span class="ttl">Break</span></li>
+          <li><span class="t">14:30–15:00</span><span class="ttl"><span class="code">CH 03</span>Admin Setup 브리핑
+            <span class="d">플릿 배포 · Bedrock IAM/SSO · managed 정책과 관측</span></span></li>
+          <li class="soft"><span class="t">15:00–15:10</span><span class="ttl">Break</span></li>
+          <li class="hi"><span class="t">15:10–17:35</span><span class="ttl"><span class="code">CAPSTONE R1</span>오늘 배운 것으로 첫 완결
+            <span class="d">게임 · 미술관 · 지진 워치 중 택 1 → 설계·빌드·개장·공유</span></span></li>
+          <li class="soft"><span class="t">17:35–18:00</span><span class="ttl">쇼케이스 1
+            <span class="d">Slack 공유작 하이라이트 · 내일의 과제 정의 워크시트 배포</span></span></li>
+        </ul>
+      </article>
+
+      <!-- DAY 2 -->
+      <article class="day">
+        <div class="day-head">
+          <span class="k">Day 2</span>
+          <h3>AI 통합으로 두 번째 완결</h3>
+          <p>10:00 – 18:00 / 이론 + 핸즈온 + 캡스톤 R2</p>
+        </div>
+        <ul class="agenda">
+          <li class="soft"><span class="t">10:00–10:10</span><span class="ttl">환영인사 / 리캡</span></li>
+          <li><span class="t">10:10–11:30</span><span class="ttl"><span class="code">CH 04</span>나의 Claude Code를 팀의 플랫폼으로
+            <span class="d">설정 스코프·권한 규칙 · Hooks · MCP · 슈퍼랩</span></span></li>
+          <li class="soft"><span class="t">11:30–13:00</span><span class="ttl">점심 식사</span></li>
+          <li><span class="t">13:00–13:40</span><span class="ttl"><span class="code">CH 05</span>파이프라인 부품으로서의 CLI
+            <span class="d">-p와 구조화 출력 · 리뷰 봇 완주 · CI 통합 데모</span></span></li>
+          <li class="hi"><span class="t">13:40–17:00</span><span class="ttl"><span class="code">CAPSTONE R2</span>AI를 품은 두 번째 완결
+            <span class="d">증시 · 유튜브 · 뉴스룸 렌즈 중 택 1 → 하네스까지 얹어 완주</span></span></li>
+          <li class="soft"><span class="t">17:00–17:10</span><span class="ttl">Break</span></li>
+          <li><span class="t">17:10–17:40</span><span class="ttl"><span class="code">FINOPS</span>모델 라우팅과 메터링
+            <span class="d">방금 쓴 토큰으로 보는 효율 · Opus/Sonnet/Haiku 기준 · OTel 대시보드</span></span></li>
+          <li class="soft"><span class="t">17:40–18:00</span><span class="ttl">쇼케이스 2 &amp; Closing</span></li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- CAPSTONE -->
+<section id="capstone" style="background:var(--sunken);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2)">
+  <div class="wrap">
+    <p class="eyebrow">Capstone · 6 Missions</p>
+    <h2>라운드마다 하나를 골라 완주합니다</h2>
+    <p class="lede">라운드 1은 로컬 완결 중심, 라운드 2는 실시간 데이터와 Bedrock 분석이 들어갑니다.
+      코딩 경험이 적다면 미술관 트랙을 권합니다. 어느 쪽이든 계획 → 실행 → 커밋의 완결 리듬은 같습니다.</p>
+
+    <div class="grid-mission">
+      <article class="mission"><span class="r">Round 1 · Mission 1</span><h3>게임</h3>
+        <p>Clawd Jump 플랫포머. 로컬 완결.</p></article>
+      <article class="mission"><span class="r">Round 1 · Mission 3</span><h3>미술관</h3>
+        <p>제너러티브 아트 전시. 로컬 완결. 입문자 추천.</p></article>
+      <article class="mission"><span class="r">Round 1 · Mission 5</span><h3>지진 워치</h3>
+        <p>전 세계 실시간 지진 지도. Bedrock 브리핑 + CloudFront 실배포.</p></article>
+      <article class="mission r2"><span class="r">Round 2 · Mission 2</span><h3>증시</h3>
+        <p>SSE 스트리밍 대시보드. 풀 트랙.</p></article>
+      <article class="mission r2"><span class="r">Round 2 · Mission 4</span><h3>유튜브</h3>
+        <p>트렌드 레이더. 풀 트랙.</p></article>
+      <article class="mission r2"><span class="r">Round 2 · Mission 6</span><h3>뉴스룸 렌즈</h3>
+        <p>2시간 트랙. 키 발급 없이 CloudFront 실배포로 개장.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- ENV -->
+<section id="env">
+  <div class="wrap">
+    <p class="eyebrow">Environment</p>
+    <h2>노트북과 브라우저만 준비하세요</h2>
+    <p class="lede">개인 노트북 설정 차이로 실습이 막히지 않도록, 모든 참가자에게 1인 1대의 EC2 인스턴스를 제공합니다.
+      별도 설치나 SSH 없이 브라우저로 code-server에 접속하면 Claude Code가 이미 준비되어 있습니다.</p>
+
+    <table>
+      <caption>워크샵 실습 환경 요약</caption>
+      <thead><tr><th scope="col">항목</th><th scope="col">내용</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">일정 · 장소</th><td>양일 전일정 — Day 1 <span class="m">10:00–18:00</span>, Day 2 <span class="m">10:00–18:00</span> / 일정과 장소는 고객사 협의 후 확정.</td></tr>
+        <tr><th scope="row">사전 준비물</th><td>최신 브라우저가 설치된 노트북. 로컬 설치는 없으며 접속 주소와 계정은 현장 배부.</td></tr>
+        <tr><th scope="row">접속 방식</th><td>브라우저 → <span class="m">code-server</span> (1인 1 EC2). VS Code 화면에서 편집기와 통합 터미널을 나란히.</td></tr>
+        <tr><th scope="row">Claude Code</th><td>CLI와 플러그인 사전 설치 완료. 터미널에서 <span class="m">claude</span> 실행 후 인증 경로만 선택.</td></tr>
+        <tr><th scope="row">모델 접근</th><td>Claude Enterprise 또는 Amazon Bedrock 중 선택. 두 경로는 CH 01에서 비교.</td></tr>
+        <tr><th scope="row">사용 모델</th><td><span class="m">Claude Fable 5 · Opus 5 · Sonnet 5</span> — 과제 성격에 맞춰 바꿔 쓰며 차이를 체감.</td></tr>
+        <tr><th scope="row">질의응답</th><td>실습 중 질문과 트러블슈팅은 <a href="https://claudecode-workshop.slack.com/archives/C0C0M994P3M">워크샵 Slack 채널</a>에서 실시간.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SLACK -->
+<section id="slack" style="border-top:1px solid var(--line-2)">
+  <div class="wrap">
+    <p class="eyebrow">Q&amp;A Channel</p>
+    <h2>워크샵 Slack 채널</h2>
+    <p class="lede">실습 중 질문과 트러블슈팅은 Slack 채널에서 실시간으로 받습니다. 시작 전에 미리 참여해 두면 랩 진행 중 바로 도움을 받을 수 있습니다.</p>
+    <div class="survey-card">
+      <img src="./image/SlackQR.png" alt="워크샵 Slack 채널 QR 코드 — claudecode-workshop.slack.com" width="200" height="200">
+      <div class="survey-info">
+        <p>QR 코드를 스캔하거나 버튼을 눌러 채널에 참여하세요. 스크린샷과 에러 로그를 함께 올리면 더 빨리 해결됩니다.</p>
+        <a class="btn btn-primary" href="https://claudecode-workshop.slack.com/archives/C0C0M994P3M">Slack 채널 참여하기</a>
+        <p class="fmono">claudecode-workshop.slack.com · #C0C0M994P3M</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SURVEY -->
+<section id="survey" style="background:var(--sunken);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2)">
+  <div class="wrap">
+    <p class="eyebrow">Survey</p>
+    <h2>교육 후 설문조사</h2>
+    <p class="lede">이틀 과정에 대한 의견을 들려주세요. 휴대폰 카메라로 QR 코드를 스캔하거나 버튼을 눌러 참여할 수 있습니다.</p>
+    <div class="survey-card">
+      <img src="./image/QRCode.png" alt="설문조사 QR 코드 — pulse.amazon/survey/GUOZDPW6" width="200" height="200">
+      <div class="survey-info">
+        <p>QR 코드를 스캔하면 설문 페이지로 바로 이동합니다.</p>
+        <a class="btn btn-primary" href="https://pulse.amazon/survey/GUOZDPW6?p=0">설문조사 참여하기</a>
+        <p class="fmono">pulse.amazon/survey/GUOZDPW6</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<section id="start" style="padding-top:0">
+  <div class="wrap">
+    <div class="close">
+      <p class="eyebrow">Get started</p>
+      <h2>랩 포털에서 이틀을 먼저 둘러보세요</h2>
+      <p>챕터 랩 전체와 Capstone 미션, Reference 3부작을 한 화면에서 진행 상황과 함께 관리합니다.
+        자율 실습 트랙(CH 06 Agent SDK)도 같은 포털에 있습니다.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="index.html">Hands-on Lab 포털 열기</a>
+        <a class="btn btn-ghost" href="https://github.com/whchoi98/claude-code-workshop/tree/main/20260901">강의자료 PDF</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>금융권 고객 대상 Claude Code Deep Dive 워크샵</strong> — AWS</p>
+    <p>양일 전일정 / Day 1 10:00–18:00 · Day 2 10:00–18:00 / 일정과 장소는 고객사 협의 후 확정</p>
+    <p class="fmono">실습 환경: Amazon EC2 + code-server (Claude Code 사전 설치) · 기준: Claude Code 2.1.x, 2026.07</p>
+    <p><a href="index.html">Hands-on Lab 포털</a> ·
+       <a href="https://github.com/whchoi98/claude-code-workshop/tree/main/tech_doc">Tech Doc</a> ·
+       <a href="AWS_CCB_Program_Brochure.pdf">AWS 사전교육 CCB 프로그램 브로셔</a> ·
+       <a href="https://pulse.amazon/survey/GUOZDPW6?p=0">교육 후 설문</a></p>
+    <p class="note">일부 세션은 서비스 상황으로 다소 변경될 수 있습니다.</p>
+  </div>
+</footer>
+
+<script>
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.querySelectorAll('svg animate, svg animateTransform').forEach(function(a){ a.remove(); });
+}
+(function(){
+  var btn = document.getElementById('modeToggle');
+  function apply(on){
+    document.body.classList.toggle('white-mode', on);
+    btn.setAttribute('aria-pressed', String(on));
+    btn.textContent = on ? '기본모드' : '화이트모드';
+    try { localStorage.setItem('fsi-edm-mode', on ? 'white' : 'default'); } catch(e) {}
+  }
+  var saved = null;
+  try { saved = localStorage.getItem('fsi-edm-mode'); } catch(e) {}
+  apply(saved === 'white');
+  btn.addEventListener('click', function(){
+    apply(!document.body.classList.contains('white-mode'));
+  });
+})();
+</script>
+</body>
+</html>

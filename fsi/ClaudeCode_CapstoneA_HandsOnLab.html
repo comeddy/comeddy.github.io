@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/nanumsquare.css">
+<title>Capstone Hands-on Lab - Claude Code Deep Dive Workshop</title>
+<style>
+:root {
+  --bg: #12181F;
+  --bg-card: #1B242E;
+  --bg-code: #0C1117;
+  --bg-inline: #232E3A;
+  --line: #2A3542;
+  --orange: #FF9900;
+  --orange-dim: rgba(255, 153, 0, 0.14);
+  --crimson: #B6002E;
+  --green: #3FB950;
+  --green-dim: rgba(63, 185, 80, 0.12);
+  --text: #E2E4EC;
+  --muted: #A6ABBE;
+  --dim: #7B8198;
+  --font-body: "NanumSquareOTF", "나눔스퀘어OTF", "NanumSquare", "나눔스퀘어", "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-code: "D2Coding", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgba(255, 153, 0, 0.3); }
+a { color: var(--orange); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+/* ============ Hero ============ */
+.hero {
+  position: relative;
+  padding: 64px 32px 44px;
+  max-width: 1160px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  top: -140px; right: -180px;
+  width: 460px; height: 460px;
+  background: radial-gradient(closest-side, rgba(182, 0, 46, 0.28), rgba(255, 153, 0, 0.10) 55%, transparent 75%);
+  pointer-events: none;
+}
+.eyebrow {
+  display: inline-block;
+  background: var(--crimson);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  padding: 5px 12px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+}
+.hero h1 {
+  font-size: clamp(28px, 4.4vw, 42px);
+  font-weight: 800;
+  line-height: 1.28;
+  letter-spacing: -0.01em;
+  max-width: 780px;
+}
+.hero .subtitle {
+  margin-top: 14px;
+  color: var(--orange);
+  font-size: clamp(16px, 2.2vw, 19px);
+  font-weight: 700;
+}
+.hero .lede {
+  margin-top: 18px;
+  color: var(--muted);
+  max-width: 720px;
+  font-size: 15.5px;
+}
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  margin-top: 26px;
+  color: var(--dim);
+  font-size: 13px;
+}
+.hero-meta strong { color: var(--text); font-weight: 700; }
+
+/* ============ Sticky timeline ============ */
+.timeline {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(12, 17, 23, 0.92);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.timeline-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 10px 32px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.timeline-label {
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dim);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.timeline-label strong { color: var(--orange); font-size: 13px; }
+.segments {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+  height: 26px;
+}
+.seg {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg-card);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s;
+  padding: 0;
+  font-family: var(--font-body);
+}
+.seg:hover { border-color: var(--orange); }
+.seg .fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 153, 0, 0.85), rgba(255, 153, 0, 0.65));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+}
+.seg.done .fill { transform: scaleX(1); }
+.seg .seg-txt {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--dim);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.seg.done .seg-txt { color: #12181F; }
+.seg.active { border-color: var(--orange); box-shadow: 0 0 0 1px var(--orange) inset; }
+
+/* ============ Layout ============ */
+.layout {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 44px 32px 80px;
+  display: grid;
+  grid-template-columns: 216px minmax(0, 1fr);
+  gap: 52px;
+  align-items: start;
+}
+.sidenav {
+  position: sticky;
+  top: 66px;
+  font-size: 13.5px;
+}
+.sidenav .nav-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dim);
+  letter-spacing: 0.14em;
+  margin-bottom: 14px;
+}
+.sidenav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  padding: 7px 10px;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+}
+.sidenav a:hover { color: var(--text); background: var(--bg-card); text-decoration: none; }
+.sidenav a.active { color: var(--orange); border-left-color: var(--orange); background: var(--bg-card); }
+.sidenav .dot {
+  flex: none;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--dim);
+}
+.sidenav a.done .dot { background: var(--green); border-color: var(--green); }
+.sidenav .nav-time { margin-left: auto; font-size: 11px; color: var(--dim); }
+
+/* ============ Task sections ============ */
+.task { margin-bottom: 72px; }
+.task-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 26px;
+}
+.task-num {
+  font-family: var(--font-code);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--orange);
+  letter-spacing: 0.1em;
+}
+.task-head h2 {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.time-badge {
+  margin-left: auto;
+  flex: none;
+  background: var(--orange-dim);
+  color: var(--orange);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.task-goal {
+  color: var(--muted);
+  margin-bottom: 24px;
+  max-width: 760px;
+}
+.task-goal strong { color: var(--text); }
+.step-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16.5px;
+  font-weight: 800;
+  margin: 34px 0 12px;
+}
+.step-title .step-no {
+  flex: none;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #12181F;
+  font-size: 12.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+p.body { color: var(--muted); margin: 10px 0 14px; max-width: 760px; }
+p.body strong, li strong { color: var(--text); }
+code.inline {
+  font-family: var(--font-code);
+  font-size: 0.88em;
+  background: var(--bg-inline);
+  color: #FFC466;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+kbd {
+  font-family: var(--font-code);
+  font-size: 0.82em;
+  background: var(--bg-inline);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 2px 8px;
+  color: var(--text);
+}
+
+/* ============ Code blocks ============ */
+.code-wrap {
+  background: var(--bg-code);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin: 14px 0 20px;
+  overflow: hidden;
+}
+.code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.02);
+}
+.code-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.copy-btn {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--bg-inline);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.copy-btn:hover { color: var(--orange); border-color: var(--orange); }
+.copy-btn.copied { color: var(--green); border-color: var(--green); }
+.code-wrap pre {
+  padding: 16px 18px;
+  overflow-x: auto;
+  font-family: var(--font-code);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+.code-wrap code { font-family: inherit; color: #D8DEE9; }
+.code-wrap.output pre { color: var(--dim); }
+.code-wrap .cmt { color: #5E6B7E; }
+.code-wrap .hl { color: #FFC466; }
+.code-wrap .ok { color: var(--green); }
+
+/* ============ Callouts ============ */
+.callout {
+  border-radius: 8px;
+  background: var(--bg-card);
+  padding: 14px 18px;
+  margin: 18px 0;
+  font-size: 14.5px;
+  color: var(--muted);
+  max-width: 760px;
+}
+.callout strong { color: var(--text); }
+.callout.tip .co-title { color: var(--orange); }
+
+.callout .co-title {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin-bottom: 5px;
+}
+
+.callout.warn .co-title { color: #FF5C85; }
+
+/* ============ Checkpoint ============ */
+.checkpoint {
+  background: var(--green-dim);
+  border: 1px solid rgba(63, 185, 80, 0.35);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-top: 28px;
+}
+.checkpoint .cp-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+.cp-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 5px 0;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+.cp-item input {
+  flex: none;
+  margin-top: 5px;
+  width: 15px; height: 15px;
+  accent-color: var(--green);
+  cursor: pointer;
+}
+.cp-item input:checked + span { color: var(--text); }
+
+/* ============ Tabs ============ */
+.tabs { margin: 18px 0 6px; }
+.tab-btns {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.tab-btn {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dim);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 9px 16px;
+  cursor: pointer;
+  margin-bottom: -1px;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); }
+.tab-pane { display: none; padding-top: 16px; }
+.tab-pane.active { display: block; }
+
+/* ============ Tables ============ */
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0 22px;
+  font-size: 14px;
+  background: var(--bg-card);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.tbl th, .tbl td {
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 1px solid #FFFFFF14;
+}
+.tbl th {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--orange);
+  background: rgba(255, 255, 255, 0.03);
+}
+.tbl td { color: var(--muted); vertical-align: middle; }
+.tbl td:first-child { color: var(--text); font-weight: 700; white-space: nowrap; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl code { font-family: var(--font-code); font-size: 0.9em; color: #FFC466; }
+
+/* ============ Wrap-up ============ */
+.wrapup {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 32px 34px;
+  margin-bottom: 56px;
+}
+.wrapup h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+.wrapup .sub { color: var(--muted); font-size: 14.5px; margin-bottom: 18px; }
+.next-box {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  background: linear-gradient(90deg, rgba(182, 0, 46, 0.16), rgba(255, 153, 0, 0.08));
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px 26px;
+}
+.next-box .nx-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--orange);
+}
+.next-box h3 { font-size: 19px; font-weight: 800; }
+.next-box p { color: var(--muted); font-size: 14px; }
+
+footer {
+  border-top: 1px solid var(--line);
+  padding: 30px 32px 46px;
+  text-align: center;
+  color: var(--dim);
+  font-size: 13px;
+  line-height: 1.9;
+}
+footer .who { color: var(--muted); font-weight: 700; }
+footer .mail { color: var(--orange); }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 0; padding: 32px 20px 64px; }
+  .sidenav { display: none; }
+  .hero { padding: 44px 20px 32px; }
+  .timeline-inner { padding: 10px 20px; }
+  .seg .seg-txt { font-size: 9px; }
+  .task-head h2 { font-size: 20px; }
+}
+
+/* ===== Chapter 4 additions: Super Lab ===== */
+.part-divider { margin: 72px 0 12px; padding: 30px 34px; border-radius: 14px;
+  background: linear-gradient(135deg, #1d1433 0%, #12181F 65%); border: 1px solid #45306b; }
+.part-divider .pd-eyebrow { display: inline-block; background: #7a3ff2; color: #fff;
+  font-size: 11px; font-weight: 800; letter-spacing: .14em; padding: 4px 12px; border-radius: 4px; }
+.part-divider h2 { margin: 14px 0 8px; font-size: 26px; color: var(--text); }
+.part-divider p { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.75; max-width: 860px; }
+.part-divider .rules { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 10px; }
+.part-divider .rules span { background: #241a3d; border: 1px solid #45306b; color: #d9c9ff;
+  font-size: 12.5px; padding: 6px 12px; border-radius: 999px; }
+.task.mission .task-num { color: #c9a2ff; }
+.task.mission { border-color: #3a2a57; }
+.checkpoint.dod { border-color: #7a3ff2; background: rgba(122, 63, 242, .06); }
+.checkpoint.dod .cp-title { color: #c9a2ff; }
+details.solution { margin: 18px 0; border: 1px dashed #FF9900; border-radius: 10px; background: rgba(255,153,0,.04); }
+details.solution summary { cursor: pointer; padding: 12px 16px; color: var(--accent); font-weight: 700; font-size: 13.5px; list-style: none; }
+details.solution summary::before { content: "▸ "; }
+details.solution[open] summary::before { content: "▾ "; }
+details.solution .sol-body { padding: 0 16px 14px; }
+
+/* ── Korean typography fix: 단어 단위 줄바꿈, 히어로 정돈 ── */
+body { word-break: keep-all; overflow-wrap: break-word; }
+.hero h1 { max-width: 980px; font-size: clamp(26px, 4vw, 38px); text-wrap: balance; }
+.hero .subtitle, .hero .lede, .task-goal, .wrapup .sub { text-wrap: pretty; }
+
+/* ── 잘림 방지 v2: 히어로 압축 + 좁은 화면 대응 ── */
+.hero { padding: 44px 28px 34px; }
+.eyebrow { margin-bottom: 14px; }
+.hero h1 { line-height: 1.3; }
+.hero .subtitle { margin-top: 10px; }
+.hero .lede { margin-top: 12px; }
+.seg-txt { text-overflow: ellipsis; }
+@media (max-width: 620px) {
+  .hero { padding: 26px 16px 24px; }
+  .hero h1 { font-size: 23px; }
+  .hero .subtitle { font-size: 15px; }
+  .hero .lede { font-size: 14px; }
+  .hero-meta { gap: 6px 14px; font-size: 12px; }
+  .seg .seg-txt { display: none; }
+  .timeline-inner { padding: 0 10px; }
+}
+
+/* ── 잘림 방지 v3: 좁은 화면 가로 넘침 제거 ── */
+.tbl { display: block; overflow-x: auto; max-width: 100%; }
+.hero, .layout, .timeline-inner, main, section { min-width: 0; }
+@media (max-width: 620px) {
+  .timeline-label:last-child { display: none; }
+}
+
+/* ── 잘림 방지 v4: 인라인 코드 칩의 최소폭 강제 해제 ── */
+code.inline { white-space: normal; overflow-wrap: anywhere; }
+
+/* ── v5: 소개문/본문 전체 폭 사용 (가독성 캡 해제) ── */
+.hero .lede, .task-goal, p.body, .callout, .part-divider p, .wrapup .sub { max-width: none; }
+.hero .lede { text-wrap: wrap; }
+
+/* ── macOS 터미널 스타일: 신호등 3버튼 ── */
+.code-head { position: relative; padding-left: 76px; }
+.code-head::before {
+  content: ""; position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  width: 11px; height: 11px; border-radius: 50%; background: #FF5F57;
+  box-shadow: 18px 0 0 #FEBC2E, 36px 0 0 #28C840;
+}
+
+/* ── v6: 화이트 모드 (우측 상단 고정 토글, 라이트 팔레트는 대비 4.5:1 이상) ── */
+.theme-toggle {
+  position: fixed; top: 9px; right: 14px; z-index: 60;
+  font-family: var(--font-body); font-size: 11.5px; font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--muted); background: var(--bg-card);
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 5px 14px; cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.theme-toggle:hover { color: var(--orange); border-color: var(--orange); }
+@media (max-width: 1300px) { .timeline-inner { padding-right: 88px; } }
+html.light {
+  --bg: #F4F6F9; --bg-card: #FFFFFF; --bg-inline: #E8EDF3;
+  --line: #D7DEE7;
+  --orange: #A85500; --orange-dim: rgba(168, 85, 0, 0.10);
+  --green: #1F883D; --green-dim: rgba(31, 136, 61, 0.08);
+  --text: #1B2430; --muted: #4B5665; --dim: #66717F;
+}
+html.light ::selection { background: rgba(255, 153, 0, 0.35); }
+html.light .hero::after { background: radial-gradient(closest-side, rgba(182, 0, 46, 0.10), rgba(255, 153, 0, 0.06) 55%, transparent 75%); }
+html.light .timeline { background: rgba(255, 255, 255, 0.92); }
+html.light .step-title .step-no { color: #FFFFFF; }
+html.light code.inline, html.light .tbl code { color: #9A4E00; }
+html.light .tbl th { background: rgba(0, 0, 0, 0.035); }
+html.light .tbl th, html.light .tbl td { border-bottom-color: rgba(0, 0, 0, 0.08); }
+html.light .code-wrap { border-color: #303C4B; }
+html.light .code-head { border-bottom-color: #2A3542; }
+html.light .code-wrap .code-label { color: #7B8198; }
+html.light .code-wrap .copy-btn { color: #A6ABBE; background: #232E3A; border-color: #2A3542; }
+html.light .code-wrap .copy-btn:hover { color: #FF9900; border-color: #FF9900; }
+html.light .code-wrap .copy-btn.copied { color: #3FB950; border-color: #3FB950; }
+html.light .code-wrap.output pre { color: #8B96A5; }
+html.light .callout.warn .co-title { color: #C7325C; }
+html.light .checkpoint { border-color: rgba(31, 136, 61, 0.4); }
+html.light .next-box { background: linear-gradient(90deg, rgba(182, 0, 46, 0.06), rgba(255, 153, 0, 0.05)); }
+html.light .part-divider { background: linear-gradient(135deg, #F0EAFB 0%, #F7F5FC 65%); border-color: #CDBDF0; }
+html.light .part-divider .rules span { background: #EDE6FB; border-color: #CDBDF0; color: #4A2D8A; }
+html.light .task.mission .task-num, html.light .checkpoint.dod .cp-title { color: #6B3FD4; }
+html.light .checkpoint.dod { background: rgba(122, 63, 242, 0.05); }
+html.light details.solution { border-color: #A85500; background: rgba(168, 85, 0, 0.04); }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="eyebrow">Capstone Hands-on Lab / Chapter 1-5 통합</span>
+  <h1>Mission: Ship It, 나의 Claude Ops Center를 배포하라</h1>
+  <div class="subtitle">Claude Code Deep Dive Workshop, Capstone - AWS Full Stack 실전 (135분 목표 / 150분 상한)</div>
+  <p class="lede">
+    지난 5개 챕터의 학습을 전부 소환하는 캡스톤입니다. 각자 <strong>superpowers 플러그인</strong>의
+    brainstorm → plan → execute 워크플로로 <strong>공개 URL로 접속되는 풀스택 서비스</strong>를 배포합니다.
+    서비스의 정체는 "내 Claude Code 세션을 관측하는 대시보드 + Bedrock 질의 패널", 즉
+    <strong>랩 내내 쓰는 도구가 자기 자신을 관측하게 만드는 앱</strong>입니다.
+    완주하면 두 번째 창의 손님이 되어 내 옵스 센터에 방문 이벤트를 남기고, 관측 루프가 외부 요청까지 기록하는 것을 확인합니다.
+  </p>
+  <div class="hero-meta">
+    <span>환경 <strong>Claude Code on EC2 + Admin 계정</strong></span>
+    <span>리전 <strong>ap-northeast-2</strong></span>
+    <span>모델 <strong>Sonnet 4.6 (Global CRIS)</strong></span>
+    <span>Update <strong>2026.07</strong></span>
+  </div>
+</header>
+
+<nav class="timeline" aria-label="랩 진행 타임라인">
+  <div class="timeline-inner">
+    <span class="timeline-label">진행 <strong id="progress-count">0/6</strong></span>
+    <div class="segments" id="segments">
+      <button class="seg" data-task="m0" style="flex:20" title="M0 발사 준비, 20분"><span class="fill"></span><span class="seg-txt">M0 발사 준비</span></button>
+      <button class="seg" data-task="m1" style="flex:30" title="M1 코어 스택, 30분"><span class="fill"></span><span class="seg-txt">M1 코어 스택</span></button>
+      <button class="seg" data-task="m2" style="flex:20" title="M2 프론트 병렬, 20분"><span class="fill"></span><span class="seg-txt">M2 프론트</span></button>
+      <button class="seg" data-task="m3" style="flex:25" title="M3 AI /ask, 25분"><span class="fill"></span><span class="seg-txt">M3 /ask</span></button>
+      <button class="seg" data-task="m4" style="flex:20" title="M4 자기관측 루프, 20분"><span class="fill"></span><span class="seg-txt">M4 관측 루프</span></button>
+      <button class="seg" data-task="m5" style="flex:15" title="M5 셀프 착륙, 15분"><span class="fill"></span><span class="seg-txt">M5 착륙</span></button>
+    </div>
+    <span class="timeline-label">130 min</span>
+  </div>
+</nav>
+
+<div class="layout">
+
+<aside class="sidenav" aria-label="랩 목차">
+  <div class="nav-title">MISSIONS / 130분 + 버퍼</div>
+  <a href="#m0" data-nav="m0"><span class="dot"></span>M0 발사 준비<span class="nav-time">20분</span></a>
+  <a href="#m1" data-nav="m1"><span class="dot"></span>M1 코어 스택<span class="nav-time">30분</span></a>
+  <a href="#m2" data-nav="m2"><span class="dot"></span>M2 프론트 병렬 빌드<span class="nav-time">20분</span></a>
+  <a href="#m3" data-nav="m3"><span class="dot"></span>M3 AI /ask (Bedrock)<span class="nav-time">25분</span></a>
+  <a href="#m4" data-nav="m4"><span class="dot"></span>M4 자기관측 루프<span class="nav-time">20분</span></a>
+  <a href="#m5" data-nav="m5"><span class="dot"></span>M5 착륙, 셀프 검증<span class="nav-time">15분</span></a>
+  <a href="#opt-h" data-nav="opt-h"><span class="dot"></span>OPT 하네스 엔지니어링<span class="nav-time">+15분</span></a>
+  <div class="nav-title" style="margin-top:18px">부록</div>
+  <a href="#apx-b" data-nav="apx-b"><span class="dot"></span>부록 컷라인과 트러블슈팅<span class="nav-time"></span></a>
+  <a href="#wrapup" data-nav="wrapup"><span class="dot"></span>마무리, 챕터 소환 지도<span class="nav-time"></span></a>
+</aside>
+
+<main>
+
+<section class="part-divider" id="briefing">
+  <span class="pd-eyebrow">MISSION BRIEFING</span>
+  <h2>무엇을, 어떻게 만드는가</h2>
+  <p>
+    최종 산출물은 CDK TypeScript 단일 스택입니다. 브라우저는 CloudFront가 서빙하는 SPA를 열고,
+    SPA는 HTTP API의 <code class="inline">/events</code>(DynamoDB)와 <code class="inline">/ask</code>(Bedrock)를 호출합니다.
+    마지막 미션에서 여러분의 EC2 위 Claude Code에 Hook을 달아, 세션 활동이 방금 배포한 API로 흘러 들어가게 만듭니다.
+  </p>
+  <div class="code-wrap output">
+    <div class="code-head"><span class="code-label">아키텍처</span></div>
+    <pre><code>[EC2의 Claude Code] --(M4 Hook: 활동 이벤트 POST)--------┐
+                                                        v
+브라우저 ── CloudFront ── S3 (SPA)                 HTTP API (API GW v2)
+                │                                   ├── Lambda events ── DynamoDB
+                └── fetch /events, /ask ────────────┴── Lambda ask ──── Bedrock
+                                                          (Global Inference Profile,
+                                                           Sonnet 4.6)</code></pre>
+  </div>
+  <div class="rules">
+    <span>규칙 1 - 코드와 IaC는 전부 Claude에게 시켜서 만든다 (superpowers 워크플로)</span>
+    <span>규칙 2 - 각 미션은 Definition of Done으로만 판정한다</span>
+    <span>규칙 3 - 막히면 "막힐 때 열어보기" 완성본으로 복구하고 전진한다</span>
+  </div>
+  <p style="margin-top:14px">
+    시간 배분은 130분 설계 + 20분 버퍼입니다. 90분 경과 시점에 M3를 시작하지 못했다면
+    <a href="#apx-b" style="color:#c9a2ff">부록 컷라인</a>을 적용하세요.
+  </p>
+</section>
+
+<!-- ================= M0 ================= -->
+<section class="task mission" id="m0">
+  <div class="task-head">
+    <span class="task-num">MISSION 00</span>
+    <h2>발사 준비, superpowers 장착과 설계 승인</h2>
+    <span class="time-badge">20분</span>
+  </div>
+  <p class="task-goal">
+    환경을 점검하고, <strong>superpowers</strong>를 설치한 뒤, 제공된 요구사항으로
+    brainstorm → plan을 돌려 <strong>4-Phase 실행 계획을 승인</strong>합니다. CDK bootstrap은 백그라운드로 겹칩니다.
+  </p>
+
+  <div class="step-title"><span class="step-no">1</span>사전 점검, Bedrock smoke까지 한 번에</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>aws sts get-caller-identity --query Account --output text
+node -v &amp;&amp; git --version &amp;&amp; jq --version
+npx cdk --version</code></pre>
+  </div>
+
+  <p class="body">Bedrock 호출은 <strong>다른 계정에서 발급받은 Bedrock API 키(Bearer 토큰)</strong>로 인증합니다.
+  SigV4 자격증명 없이 환경변수 하나면 됩니다. 세 단계로 스모크 테스트합니다.</p>
+
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal 1/3, .env에 Bearer 토큰 저장</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>mkdir -p ~/capstone
+cat &gt; ~/capstone/.env &lt;&lt; 'ENVEOF'
+AWS_BEARER_TOKEN_BEDROCK=&lt;발급받은 Bedrock API 키&gt;
+ENVEOF</code></pre>
+  </div>
+  <p class="body">저장 후 파일을 열어 <code class="inline">&lt;발급받은 Bedrock API 키&gt;</code> 자리를 실제 키로 바꾸세요.
+  <strong>리포 바깥(~/capstone/.env)에 두므로</strong> git add -A에 딸려 커밋될 일이 원천적으로 없습니다.</p>
+
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal 2/3, 셸에 로드 (값 노출 없이)</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>set -a; source ~/capstone/.env; set +a</code></pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal 3/3, Converse API 스모크</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>aws bedrock-runtime converse \
+  --region ap-northeast-2 \
+  --model-id global.anthropic.claude-sonnet-4-6 \
+  --messages '[{"role":"user","content":[{"text":"ping"}]}]' \
+  --inference-config '{"maxTokens":30}' \
+  --query 'output.message.content[0].text' --output text</code></pre>
+  </div>
+  <div class="callout warn">
+    <span class="co-title">smoke가 실패한다면</span>
+    401 또는 <code class="inline">UnrecognizedClientException</code>은 키 오탈자나 만료입니다, ~/capstone/.env를 고치고
+    2/3 로드를 다시 실행하세요. <code class="inline">AccessDeniedException</code>은 발급 계정의 모델 액세스 미승인,
+    <code class="inline">ValidationException</code>(on-demand 미지원)은 베이스 모델 ID를 쓴 경우입니다.
+    신형 모델은 반드시 <strong>global. 프로파일 ID</strong>로 호출합니다.
+    Bearer 키는 <strong>Bedrock 호출 전용</strong>이고, CDK 배포는 기존 EC2 롤(SigV4)을 그대로 씁니다. 여기서 막히면 부록 트러블슈팅의 모델 항목을 확인하세요. 이 관문만 넘으면 M3는 순항입니다.
+  </div>
+
+  <div class="step-title"><span class="step-no">2</span>프로젝트 스캐폴드와 bootstrap (백그라운드)</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>mkdir -p ~/capstone/ops-center &amp;&amp; cd ~/capstone/ops-center
+[ -f cdk.json ] || npx cdk init app --language typescript
+(npx cdk bootstrap &gt; /tmp/bootstrap.log 2&gt;&amp;1 &amp;)
+grep -qxF '.env' .gitignore 2&gt;/dev/null || echo '.env' &gt;&gt; .gitignore
+git config user.name "capstone" &amp;&amp; git config user.email "capstone@lab.local"
+git add -A &amp;&amp; git commit -m "chore: cdk scaffold" 2&gt;/dev/null || true
+echo "bootstrap은 백그라운드 진행 중. tail -f /tmp/bootstrap.log 로 확인 가능"</code></pre>
+  </div>
+  <p class="body">두 번째 줄의 가드 덕에 <strong>재실행해도 안전</strong>합니다(이미 초기화된 폴더면 init을 건너뜀).
+  .gitignore와 git 신원 설정은 실수 커밋과 신원 경고를 예방하는 안전벨트입니다.</p>
+  
+
+  <div class="step-title"><span class="step-no">3</span>superpowers 설치</div>
+  <div class="code-wrap prompt">
+    <div class="code-head"><span class="code-label">Claude 세션 입력 (claude 실행 후)</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>/plugin install superpowers@claude-plugins-official</code></pre>
+  </div>
+  <p class="body">
+    설치 후 <code class="inline">/plugin</code>으로 활성 상태를 확인하고, <strong>세션을 재시작</strong>하세요
+    (<code class="inline">/exit</code> 후 claude). superpowers는 세션 시작 훅으로 부트스트랩되므로 재시작이 필요합니다.
+  </p>
+  <div class="callout tip">
+    <span class="co-title">마켓플레이스를 못 찾는다면</span>
+    <code class="inline">/plugin marketplace add anthropics/claude-plugins-official</code> 후 재시도하거나,
+    커뮤니티 경로 <code class="inline">/plugin marketplace add obra/superpowers-marketplace</code> →
+    <code class="inline">/plugin install superpowers@superpowers-marketplace</code>를 사용하세요. 결과는 동일합니다.
+  </div>
+
+  <div class="step-title"><span class="step-no">4</span>브레인스토밍, 요구사항은 이걸 그대로</div>
+  <div class="code-wrap prompt">
+    <div class="code-head"><span class="code-label">Claude 세션 입력, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>/superpowers:brainstorming 다음 요구사항으로 "Claude Ops Center"를 설계하자.
+1) 정적 SPA 1페이지 대시보드: S3 + CloudFront(OAC) 서빙
+2) HTTP API(API Gateway v2) + Lambda(Node 22) + DynamoDB 단일 테이블(pk/sk): POST/GET /events
+3) POST /ask: Lambda가 Bedrock Converse API로 Global Inference Profile 호출
+   (기본 global.anthropic.claude-sonnet-4-6, CDK context askModelId로 교체 가능), maxTokens 600, CORS 허용.
+   Bedrock 인증은 IAM이 아니라 다른 계정에서 발급한 API 키를 쓴다: 배포 셸의 AWS_BEARER_TOKEN_BEDROCK 값을
+   CDK가 Lambda 환경변수로 주입하고, Bedrock용 IAM 정책은 만들지 않는다
+4) 인프라는 CDK TypeScript 단일 스택, 리전 ap-northeast-2, 리소스는 삭제 가능(DESTROY)
+5) 구현 순서는 Phase 1(events API) → Phase 2(frontend) → Phase 3(/ask) → Phase 4(관측 hook, ship 스킬)
+6) 시간 제약 2시간: 단위 테스트는 생략하고 각 Phase의 smoke curl로 검증을 갈음한다
+결정이 필요하면 이 범위 안에서 최소한으로만 물어봐.</code></pre>
+  </div>
+  <div class="callout tip">
+    <span class="co-title">자동화 옵션, auto mode</span>
+    세션에 <code class="inline">auto mode on</code>을 선언해 두면 superpowers가
+    brainstorming → writing-plans → executing-plans의 <strong>단계 전환과 승인 대기를 자동으로</strong> 이어 갑니다.
+    시간이 빠듯할 때 유용합니다. 단계마다 직접 검토하려면 기본(수동)을 유지하고, 되돌리려면
+    <code class="inline">auto mode off</code>입니다.
+  </div>
+  <p class="body">
+    브레인스토밍 질문에는 이 치트시트로 답하세요: <strong>인증 없음(퍼블릭 데모)</strong>,
+    <strong>데이터 보존 불필요</strong>, <strong>UI는 다크 테마 + 오렌지 포인트</strong>. 3~4문답이면 설계가 수렴합니다.
+  </p>
+  <div class="callout warn">
+    <span class="co-title">worktree 순간이동 주의</span>
+    superpowers는 브레인스토밍이 끝나면 <strong>git worktree를 만들어 그 디렉토리로 이동</strong>합니다.
+    이후 모든 터미널 명령(deploy, curl)은 <code class="inline">pwd</code>로 확인한 그 worktree 경로에서 실행하세요.
+    bootstrap은 계정 단위 작업이라 영향이 없습니다.
+  </div>
+
+  <div class="step-title"><span class="step-no">5</span>계획 생성과 승인</div>
+  <div class="code-wrap prompt">
+    <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>/superpowers:writing-plans</code></pre>
+  </div>
+  <p class="body">
+    생성된 계획 문서에서 <strong>Phase가 4개로 나뉘었는지</strong>, Phase 1의 산출물에
+    DynamoDB 테이블 / events Lambda / HTTP API 라우트가 들어 있는지 검토하고 승인하세요.
+    계획이 다르게 나뉘었으면 "요구사항 5)의 Phase 구분으로 재편해줘"라고 지시합니다.
+  </p>
+
+  <div class="checkpoint dod">
+    <div class="cp-title">DEFINITION OF DONE</div>
+    <label class="cp-item"><input type="checkbox" data-cp="m0a"><span>Bedrock smoke가 응답했고, bootstrap이 완료 또는 진행 중이다</span></label>
+    <label class="cp-item"><input type="checkbox" data-cp="m0b"><span>superpowers가 활성이고, 4-Phase 계획이 승인되었다</span></label>
+  </div>
+</section>
+<!-- ================= M1 ================= -->
+<section class="task mission" id="m1">
+  <div class="task-head">
+    <span class="task-num">MISSION 01</span>
+    <h2>코어 스택, 첫 배포와 첫 왕복</h2>
+    <span class="time-badge">30분</span>
+  </div>
+  <p class="task-goal">
+    Phase 1(DynamoDB + events Lambda + HTTP API)을 실행시키고 배포해,
+    <strong>curl로 넣은 이벤트가 다시 조회되는 왕복</strong>을 확인합니다. Chapter 5의 헤드리스 어휘가 여기서 일상어가 됩니다.
+  </p>
+
+  <div class="step-title"><span class="step-no">1</span>Phase 1 실행 지시</div>
+  <div class="code-wrap prompt">
+    <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>/superpowers:executing-plans 계획의 Phase 1만 구현하고 멈춰줘. 구현이 끝나면 npx cdk synth --quiet 로 합성 검증까지 하고 결과를 보고해.</code></pre>
+  </div>
+  <div class="callout tip">
+    <span class="co-title">superpowers가 테스트를 쓰려고 하면</span>
+    요구사항 6)을 상기시키세요: "이 프로젝트는 smoke curl로 검증을 갈음하기로 했어".
+    TDD 강제는 superpowers의 미덕이지만, 오늘은 시간이 상사입니다.
+  </div>
+
+  <div class="step-title"><span class="step-no">2</span>배포</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, worktree에서</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>set -a; source ~/capstone/.env; set +a   # Bearer 키 로드
+npx cdk deploy --require-approval never --outputs-file cdk-outputs.json</code></pre>
+  </div>
+  <p class="body">
+    첫 배포는 3~5분입니다. <strong>기다리지 말고 지금 바로 M2의 Step 1(프론트 병렬 빌드)을 시작하세요.</strong>
+    이 겹침이 캡스톤 시간표의 핵심입니다.
+  </p>
+
+  <div class="step-title"><span class="step-no">3</span>첫 왕복 검증</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>API=$(jq -r '.OpsCenterStack.ApiUrl' cdk-outputs.json) &amp;&amp; echo "$API"
+
+curl -s -X POST "$API/events" -H 'Content-Type: application/json' \
+  -d '{"kind":"manual","detail":"first blood","turns":1,"cost_usd":0.01}'
+
+curl -s "$API/events" | jq '.summary'</code></pre>
+  </div>
+  <div class="code-wrap output">
+    <div class="code-head"><span class="code-label">출력 예시</span></div>
+    <pre><code>{"ok":true}
+{
+  "count": 1,
+  "total_cost_usd": 0.01,
+  "total_turns": 1
+}</code></pre>
+  </div>
+  <details class="solution">
+    <summary>막힐 때 열어보기, 완성본 (스택 최종형 + events Lambda)</summary>
+    <div class="sol-body">
+<p class="body">아래는 <strong>M3까지 반영된 최종형 스택</strong>입니다. 뒤처졌다면 이 파일과 M2의 index.html, M3의 ask.mjs까지 4개 파일을 모두 배치하고 한 번에 deploy해 복구하세요 (lib/ops-center-stack.ts, bin은 두 번째 블록).</p>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">lib/ops-center-stack.ts</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>import * as cdk from "aws-cdk-lib";
+import { Construct } from "constructs";
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as apigwv2 from "aws-cdk-lib/aws-apigatewayv2";
+import * as integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
+import * as s3 from "aws-cdk-lib/aws-s3";
+import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
+import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
+import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
+import * as iam from "aws-cdk-lib/aws-iam";
+
+export class OpsCenterStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    const askModelId = this.node.tryGetContext("askModelId") ?? "global.anthropic.claude-sonnet-4-6";
+
+    // ── Phase 1: 이벤트 저장소와 API ──
+    const table = new dynamodb.Table(this, "EventsTable", {
+      partitionKey: { name: "pk", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "sk", type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const eventsFn = new lambda.Function(this, "EventsFn", {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: "events.handler",
+      code: lambda.Code.fromAsset("lambda"),
+      environment: { TABLE_NAME: table.tableName },
+      timeout: cdk.Duration.seconds(10),
+    });
+    table.grantReadWriteData(eventsFn);
+
+    const api = new apigwv2.HttpApi(this, "OpsApi", {
+      corsPreflight: {
+        allowOrigins: ["*"],
+        allowMethods: [apigwv2.CorsHttpMethod.GET, apigwv2.CorsHttpMethod.POST, apigwv2.CorsHttpMethod.OPTIONS],
+        allowHeaders: ["Content-Type"],
+      },
+    });
+    api.addRoutes({
+      path: "/events",
+      methods: [apigwv2.HttpMethod.GET, apigwv2.HttpMethod.POST],
+      integration: new integrations.HttpLambdaIntegration("EventsInt", eventsFn),
+    });
+
+    // ── Phase 3: Bedrock /ask ──
+    const askFn = new lambda.Function(this, "AskFn", {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: "ask.handler",
+      code: lambda.Code.fromAsset("lambda"),
+      environment: {
+        ASK_MODEL_ID: askModelId,
+        // 다른 계정 발급 Bedrock API 키, 배포 셸에서 주입 (IAM 정책 불필요)
+        AWS_BEARER_TOKEN_BEDROCK: process.env.AWS_BEARER_TOKEN_BEDROCK ?? "",
+      },
+      timeout: cdk.Duration.seconds(29),
+      memorySize: 512,
+    });
+    api.addRoutes({
+      path: "/ask",
+      methods: [apigwv2.HttpMethod.POST],
+      integration: new integrations.HttpLambdaIntegration("AskInt", askFn),
+    });
+
+    // ── Phase 2: 프론트엔드 (S3 + CloudFront) ──
+    const siteBucket = new s3.Bucket(this, "SiteBucket", {
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
+    const dist = new cloudfront.Distribution(this, "SiteDist", {
+      defaultBehavior: {
+        origin: origins.S3BucketOrigin.withOriginAccessControl(siteBucket),
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      },
+      defaultRootObject: "index.html",
+    });
+
+    new s3deploy.BucketDeployment(this, "DeploySite", {
+      sources: [s3deploy.Source.asset("frontend")],
+      destinationBucket: siteBucket,
+      distribution: dist,
+      distributionPaths: ["/*"],
+    });
+
+    // ── Outputs ──
+    new cdk.CfnOutput(this, "ApiUrl", { value: api.apiEndpoint });
+    new cdk.CfnOutput(this, "SiteUrl", { value: `https://${dist.distributionDomainName}` });
+    new cdk.CfnOutput(this, "AskModelId", { value: askModelId });
+  }
+}</code></pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">bin/ops-center.ts (cdk init 산출물 교체)</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>import * as cdk from "aws-cdk-lib";
+import { OpsCenterStack } from "./ops-center-stack";
+
+const app = new cdk.App();
+new OpsCenterStack(app, "OpsCenterStack", {
+  env: { region: process.env.CDK_DEFAULT_REGION ?? "ap-northeast-2" },
+  tags: { project: "capstone-ops-center" },
+});</code></pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">lambda/events.mjs</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+
+const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+const TABLE = process.env.TABLE_NAME;
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+};
+
+export const handler = async (event) =&gt; {
+  const method = event.requestContext?.http?.method ?? "GET";
+  if (method === "OPTIONS") return { statusCode: 204, headers: CORS };
+
+  try {
+    if (method === "POST") {
+      const body = JSON.parse(event.body ?? "{}");
+      const item = {
+        pk: "session",
+        sk: `${Date.now()}#${Math.random().toString(36).slice(2, 8)}`,
+        kind: String(body.kind ?? "unknown").slice(0, 40),
+        detail: String(body.detail ?? "").slice(0, 300),
+        cost_usd: Number(body.cost_usd ?? 0),
+        turns: Number(body.turns ?? 0),
+        at: new Date().toISOString(),
+      };
+      await ddb.send(new PutCommand({ TableName: TABLE, Item: item }));
+      return { statusCode: 201, headers: CORS, body: JSON.stringify({ ok: true }) };
+    }
+
+    const res = await ddb.send(new QueryCommand({
+      TableName: TABLE,
+      KeyConditionExpression: "pk = :p",
+      ExpressionAttributeValues: { ":p": "session" },
+      ScanIndexForward: false,
+      Limit: 50,
+    }));
+    const items = res.Items ?? [];
+    const summary = {
+      count: items.length,
+      total_cost_usd: Number(items.reduce((a, x) =&gt; a + (x.cost_usd || 0), 0).toFixed(4)),
+      total_turns: items.reduce((a, x) =&gt; a + (x.turns || 0), 0),
+    };
+    return { statusCode: 200, headers: CORS, body: JSON.stringify({ summary, items }) };
+  } catch (err) {
+    console.error(err);
+    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: err.message }) };
+  }
+};</code></pre>
+  </div>
+    </div>
+  </details>
+
+  <div class="checkpoint dod">
+    <div class="cp-title">DEFINITION OF DONE</div>
+    <label class="cp-item"><input type="checkbox" data-cp="m1"><span>curl GET /events의 summary.count가 1 이상이다</span></label>
+  </div>
+</section>
+
+<!-- ================= M2 ================= -->
+<section class="task mission" id="m2">
+  <div class="task-head">
+    <span class="task-num">MISSION 02</span>
+    <h2>프론트 병렬 빌드, 대시보드 개장</h2>
+    <span class="time-badge">20분</span>
+  </div>
+  <p class="task-goal">
+    M1 배포가 도는 동안 <strong>서브에이전트로 SPA를 병렬 제작</strong>하고(Chapter 2),
+    Phase 2(S3 + CloudFront)를 붙여 <strong>공개 URL</strong>을 엽니다.
+  </p>
+
+  <div class="step-title"><span class="step-no">1</span>병렬 빌드 지시 (M1 Step 2와 동시에)</div>
+  <div class="code-wrap prompt">
+    <div class="code-head"><span class="code-label">Claude 세션 입력, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>서브에이전트를 사용해서 frontend/index.html 단일 파일 SPA를 만들어줘. 요구사항:
+- 다크 테마(#12181F 배경, #FF9900 포인트), 제목 "Claude Ops Center"
+- 상단 통계 카드 3개: EVENTS 수 / TOTAL COST(USD) / TOTAL TURNS
+- /events 를 5초마다 폴링해 카드와 최근 이벤트 피드 갱신, cost 막대 캔버스 차트
+- /ask 로 질문을 POST하는 입력창과 답변 영역 (응답의 model, usage 표시)
+- const API_BASE = "PASTE_API_URL" 상수로 시작하고, fetch 실패는 조용히 무시(빈 상태 유지)</code></pre>
+  </div>
+
+  <div class="step-title"><span class="step-no">2</span>Phase 2 실행과 API 주소 주입</div>
+  <div class="code-wrap prompt">
+    <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>/superpowers:executing-plans Phase 2(S3 + CloudFront + BucketDeployment)만 구현해줘. frontend/ 폴더를 배포 소스로 사용해.</code></pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>sed -i "s|PASTE_API_URL|$API|" frontend/index.html
+set -a; source ~/capstone/.env; set +a   # Bearer 키 로드
+npx cdk deploy --require-approval never --outputs-file cdk-outputs.json
+SITE=$(jq -r '.OpsCenterStack.SiteUrl' cdk-outputs.json) &amp;&amp; echo "대시보드: $SITE"</code></pre>
+  </div>
+  <p class="body">
+    브라우저에서 SiteUrl을 열면 카드 3개와 M1에서 넣은 "first blood" 이벤트가 보여야 합니다.
+    CloudFront 첫 전파는 몇 분 걸릴 수 있으니, 그 사이 <strong>M3를 먼저 시작</strong>하세요.
+  </p>
+  <details class="solution">
+    <summary>막힐 때 열어보기, 완성본 (frontend/index.html)</summary>
+    <div class="sol-body">
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">frontend/index.html</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+&lt;title&gt;Claude Ops Center&lt;/title&gt;
+&lt;style&gt;
+  :root { --bg:#12181F; --card:#1B242E; --line:#2A3542; --text:#E8ECF1; --muted:#8B96A5; --accent:#FF9900; --purple:#7a3ff2; --green:#3FB950; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg); color:var(--text); font-family:system-ui,sans-serif; padding:28px 20px 60px; }
+  .wrap { max-width:960px; margin:0 auto; }
+  header h1 { font-size:24px; } header .sub { color:var(--muted); font-size:13px; margin-top:4px; }
+  header h1 em { color:var(--accent); font-style:normal; }
+  .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:22px 0; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; }
+  .card .k { color:var(--muted); font-size:12px; letter-spacing:.08em; }
+  .card .v { font-size:26px; font-weight:700; margin-top:6px; }
+  .card .v.orange { color:var(--accent); } .card .v.purple { color:#c9a2ff; } .card .v.green { color:var(--green); }
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:16px; }
+  .panel h2 { font-size:14px; color:var(--muted); letter-spacing:.06em; margin-bottom:12px; }
+  canvas { width:100%; height:120px; }
+  ul#feed { list-style:none; max-height:220px; overflow:auto; }
+  ul#feed li { padding:8px 4px; border-bottom:1px solid var(--line); font-size:13.5px; display:flex; gap:10px; }
+  ul#feed .kind { color:var(--accent); min-width:110px; font-weight:600; }
+  ul#feed .at { color:var(--muted); margin-left:auto; font-size:12px; }
+  .askrow { display:flex; gap:10px; }
+  input#q { flex:1; background:#0C1117; border:1px solid var(--line); border-radius:8px; color:var(--text); padding:12px; font-size:14px; }
+  button { background:var(--purple); border:0; border-radius:8px; color:#fff; padding:0 22px; font-weight:700; cursor:pointer; }
+  button:disabled { opacity:.5; }
+  #answer { margin-top:12px; font-size:14px; line-height:1.7; white-space:pre-wrap; }
+  #answer .meta { color:var(--muted); font-size:12px; margin-top:6px; }
+  .empty { color:var(--muted); font-size:13px; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class="wrap"&gt;
+  &lt;header&gt;
+    &lt;h1&gt;&lt;em&gt;Claude&lt;/em&gt; Ops Center&lt;/h1&gt;
+    &lt;div class="sub"&gt;내 Claude Code 세션 관측 대시보드 - Capstone Lab&lt;/div&gt;
+  &lt;/header&gt;
+
+  &lt;div class="cards"&gt;
+    &lt;div class="card"&gt;&lt;div class="k"&gt;EVENTS&lt;/div&gt;&lt;div class="v orange" id="stat-count"&gt;-&lt;/div&gt;&lt;/div&gt;
+    &lt;div class="card"&gt;&lt;div class="k"&gt;TOTAL COST (USD)&lt;/div&gt;&lt;div class="v purple" id="stat-cost"&gt;-&lt;/div&gt;&lt;/div&gt;
+    &lt;div class="card"&gt;&lt;div class="k"&gt;TOTAL TURNS&lt;/div&gt;&lt;div class="v green" id="stat-turns"&gt;-&lt;/div&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="panel"&gt;
+    &lt;h2&gt;SESSION COST TIMELINE&lt;/h2&gt;
+    &lt;canvas id="chart" width="900" height="120"&gt;&lt;/canvas&gt;
+  &lt;/div&gt;
+
+  &lt;div class="panel"&gt;
+    &lt;h2&gt;EVENT FEED (5초 폴링)&lt;/h2&gt;
+    &lt;ul id="feed"&gt;&lt;li class="empty"&gt;아직 이벤트가 없습니다. Mission 4의 Hook이 연결되면 여기에 세션이 쌓입니다.&lt;/li&gt;&lt;/ul&gt;
+  &lt;/div&gt;
+
+  &lt;div class="panel"&gt;
+    &lt;h2&gt;ASK BEDROCK (Global Inference)&lt;/h2&gt;
+    &lt;div class="askrow"&gt;
+      &lt;input id="q" placeholder="예: 방금 배포한 아키텍처를 한 문장으로 설명해줘"&gt;
+      &lt;button id="askbtn"&gt;Ask&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div id="answer"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+"use strict";
+var API_BASE = "PASTE_API_URL"; // 예: https://abc123.execute-api.ap-northeast-2.amazonaws.com
+
+function fmt(n, d) { return Number(n || 0).toFixed(d); }
+
+function drawChart(items) {
+  var c = document.getElementById("chart");
+  var ctx = c.getContext("2d");
+  ctx.clearRect(0, 0, c.width, c.height);
+  var data = items.slice(0, 24).reverse().map(function (x) { return x.cost_usd || 0; });
+  if (!data.length) return;
+  var max = Math.max.apply(null, data.concat([0.001]));
+  var bw = c.width / data.length;
+  data.forEach(function (v, i) {
+    var h = Math.max(3, (v / max) * (c.height - 10));
+    ctx.fillStyle = "#7a3ff2";
+    ctx.fillRect(i * bw + 3, c.height - h, bw - 6, h);
+  });
+}
+
+function refresh() {
+  fetch(API_BASE + "/events")
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      document.getElementById("stat-count").textContent = d.summary.count;
+      document.getElementById("stat-cost").textContent = "$" + fmt(d.summary.total_cost_usd, 4);
+      document.getElementById("stat-turns").textContent = d.summary.total_turns;
+      var feed = document.getElementById("feed");
+      if (d.items.length) {
+        feed.innerHTML = d.items.map(function (x) {
+          return '&lt;li&gt;&lt;span class="kind"&gt;' + x.kind + '&lt;/span&gt;&lt;span&gt;' + (x.detail || "") +
+                 '&lt;/span&gt;&lt;span class="at"&gt;' + (x.at || "").slice(11, 19) + "&lt;/span&gt;&lt;/li&gt;";
+        }).join("");
+      }
+      drawChart(d.items);
+    })
+    .catch(function () { /* API 미연결 상태 허용 */ });
+}
+
+document.getElementById("askbtn").addEventListener("click", function () {
+  var q = document.getElementById("q").value.trim();
+  if (!q) return;
+  var btn = this, ans = document.getElementById("answer");
+  btn.disabled = true; ans.textContent = "생각 중...";
+  fetch(API_BASE + "/ask", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question: q })
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      ans.innerHTML = "";
+      var t = document.createElement("div"); t.textContent = d.answer || d.message || "(응답 없음)";
+      var m = document.createElement("div"); m.className = "meta";
+      m.textContent = d.model ? d.model + " / in " + d.usage.inputTokens + " out " + d.usage.outputTokens : "";
+      ans.appendChild(t); ans.appendChild(m);
+    })
+    .catch(function (e) { ans.textContent = "오류: " + e.message; })
+    .finally(function () { btn.disabled = false; });
+});
+
+refresh();
+setInterval(refresh, 5000);
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+  </div>
+    </div>
+  </details>
+
+  <div class="checkpoint dod">
+    <div class="cp-title">DEFINITION OF DONE</div>
+    <label class="cp-item"><input type="checkbox" data-cp="m2"><span>CloudFront URL에서 대시보드가 뜨고 first blood 이벤트가 피드에 보인다</span></label>
+  </div>
+</section>
+<!-- ================= M3 ================= -->
+<section class="task mission" id="m3">
+  <div class="task-head">
+    <span class="task-num">MISSION 03</span>
+    <h2>AI /ask, Global Inference Profile 연결</h2>
+    <span class="time-badge">25분</span>
+  </div>
+  <p class="task-goal">
+    Bedrock Converse를 호출하는 <code class="inline">/ask</code>를 붙입니다. Chapter 3에서 읽기만 했던
+    IAM 정책이 여기서 실제로 배포됩니다. 모델은 컨텍스트 변수 하나로 교체됩니다.
+  </p>
+
+  <table class="tbl">
+    <tr><th>모델</th><th>Global Inference Profile ID</th><th>선택</th></tr>
+    <tr><td>Claude Sonnet 4.6</td><td><code>global.anthropic.claude-sonnet-4-6</code></td><td>기본값, 속도/비용 균형</td></tr>
+    <tr><td>Claude Sonnet 5</td><td><code>global.anthropic.claude-sonnet-5</code></td><td>deploy 시 -c askModelId=... 로 교체</td></tr>
+  </table>
+
+  <div class="step-title"><span class="step-no">1</span>Phase 3 실행 지시</div>
+  <div class="code-wrap prompt">
+    <div class="code-head"><span class="code-label">Claude 세션 입력, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>/superpowers:executing-plans Phase 3을 구현해줘. 조건:
+- lambda/ask.mjs: @aws-sdk/client-bedrock-runtime 의 ConverseCommand 사용, 환경변수 ASK_MODEL_ID(기본 global.anthropic.claude-sonnet-4-6), maxTokens 600, CORS 헤더, 오류는 502 JSON
+- 스택: /ask POST 라우트 추가, Lambda timeout 29초. Bedrock IAM 정책은 만들지 말 것.
+  대신 Lambda environment에 AWS_BEARER_TOKEN_BEDROCK: process.env.AWS_BEARER_TOKEN_BEDROCK ?? "" 를 주입
+  (SDK가 이 환경변수를 자동 인식해 API 키로 인증한다)</code></pre>
+  </div>
+
+  <div class="step-title"><span class="step-no">2</span>배포와 검증</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>set -a; source ~/capstone/.env; set +a   # Bearer 키를 배포 셸에 로드
+npx cdk deploy --require-approval never --outputs-file cdk-outputs.json
+curl -s -X POST "$API/ask" -H 'Content-Type: application/json' \
+  -d '{"question":"HTTP API와 REST API의 차이를 한 문장으로"}' | jq '{answer, model, usage}'</code></pre>
+  </div>
+  <div class="callout warn">
+    <span class="co-title">이후의 모든 deploy는 .env 로드가 선행</span>
+    스택이 배포 셸의 <code class="inline">AWS_BEARER_TOKEN_BEDROCK</code>을 읽어 Lambda에 넣으므로,
+    새 터미널에서 deploy할 때는 항상 <code class="inline">set -a; source ~/capstone/.env; set +a</code>를 먼저 실행하세요.
+    빈 값으로 배포되면 /ask가 401을 반환합니다, 로드 후 재배포가 처방입니다.
+  </div>
+  <div class="code-wrap output">
+    <div class="code-head"><span class="code-label">출력 예시</span></div>
+    <pre><code>{
+  "answer": "HTTP API는 경량/저비용의 v2 게이트웨이고, REST API는 기능이 풍부한 v1 게이트웨이입니다.",
+  "model": "global.anthropic.claude-sonnet-4-6",
+  "usage": { "inputTokens": 64, "outputTokens": 51, "totalTokens": 115 }
+}</code></pre>
+  </div>
+  <p class="body">
+    브라우저 대시보드의 <strong>Ask 패널</strong>에서도 같은 질문을 던져 보세요.
+    Sonnet 5로 바꾸려면 <code class="inline">npx cdk deploy -c askModelId=global.anthropic.claude-sonnet-5 --require-approval never</code> 한 줄입니다.
+  </p>
+  <div class="callout warn">
+    <span class="co-title">이 미션의 3대 함정</span>
+    ① <code class="inline">ValidationException</code>(on-demand 미지원) = 베이스 ID 사용, global. 프로파일로 교체.
+    ② <code class="inline">AccessDeniedException</code> = IAM 리소스 2종(foundation-model + inference-profile) 중 하나 누락이거나 모델 액세스 미승인.
+    ③ 30초 근처 타임아웃 = HTTP API 상한. maxTokens 600을 지키고, 더 긴 답이 필요하면 Lambda Function URL로 우회(부록 트러블슈팅).
+  </div>
+  <details class="solution">
+    <summary>막힐 때 열어보기, 완성본 (lambda/ask.mjs)</summary>
+    <div class="sol-body">
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">lambda/ask.mjs</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>import { BedrockRuntimeClient, ConverseCommand } from "@aws-sdk/client-bedrock-runtime";
+
+const client = new BedrockRuntimeClient({});
+const MODEL_ID = process.env.ASK_MODEL_ID ?? "global.anthropic.claude-sonnet-4-6";
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "POST,OPTIONS",
+};
+
+export const handler = async (event) =&gt; {
+  const method = event.requestContext?.http?.method ?? "POST";
+  if (method === "OPTIONS") return { statusCode: 204, headers: CORS };
+
+  try {
+    const { question } = JSON.parse(event.body ?? "{}");
+    if (!question) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "question 필요" }) };
+
+    const res = await client.send(new ConverseCommand({
+      modelId: MODEL_ID,
+      system: [{ text: "당신은 이 워크샵 참가자의 AWS/Claude Code 조수입니다. 3문장 이내로 한국어로 답하세요." }],
+      messages: [{ role: "user", content: [{ text: String(question).slice(0, 2000) }] }],
+      inferenceConfig: { maxTokens: 600 },
+    }));
+
+    const answer = res.output?.message?.content?.map((c) =&gt; c.text ?? "").join("") ?? "";
+    const usage = res.usage ?? {};
+    return {
+      statusCode: 200, headers: CORS,
+      body: JSON.stringify({ answer, model: MODEL_ID, usage }),
+    };
+  } catch (err) {
+    console.error(err);
+    return { statusCode: 502, headers: CORS, body: JSON.stringify({ error: err.name, message: err.message }) };
+  }
+};</code></pre>
+  </div>
+    </div>
+  </details>
+
+  <div class="checkpoint dod">
+    <div class="cp-title">DEFINITION OF DONE</div>
+    <label class="cp-item"><input type="checkbox" data-cp="m3a"><span>curl /ask가 answer와 usage를 반환한다</span></label>
+    <label class="cp-item"><input type="checkbox" data-cp="m3b"><span>브라우저 Ask 패널에 선택한 모델 ID가 표시된다</span></label>
+  </div>
+</section>
+
+<!-- ================= M4 ================= -->
+<section class="task mission" id="m4">
+  <div class="task-head">
+    <span class="task-num">MISSION 04</span>
+    <h2>자기관측 루프, 도구가 자신을 보기 시작한다</h2>
+    <span class="time-badge">20분</span>
+  </div>
+  <p class="task-goal">
+    Chapter 3~4의 Hook을 달아 <strong>지금 이 세션의 활동이 방금 배포한 대시보드로 흐르게</strong> 만들고,
+    Chapter 5의 헤드리스 JSON으로 비용 차트를 채웁니다. 캡스톤의 WoW 순간입니다.
+  </p>
+
+  <div class="step-title"><span class="step-no">1</span>관측 Hook 배치</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사 (worktree에서)</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>mkdir -p .claude/hooks
+cat &gt; .claude/hooks/ops-report.sh &lt;&lt; 'OPSEOF'
+#!/bin/bash
+# PostToolUse + Stop 겸용 hook: 활동 이벤트를 Ops Center로 전송 (비차단)
+INPUT=$(cat)
+[ -z "${OPS_API_BASE:-}" ] &amp;&amp; exit 0
+
+if command -v jq &gt;/dev/null 2&gt;&amp;1; then
+  EVT=$(echo "$INPUT"  | jq -r '.hook_event_name // "unknown"')
+  TOOL=$(echo "$INPUT" | jq -r '.tool_name // empty')
+  SID=$(echo "$INPUT"  | jq -r '.session_id // ""' | cut -c1-8)
+else
+  EVT=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('hook_event_name','unknown'))" 2&gt;/dev/null)
+  TOOL=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_name',''))" 2&gt;/dev/null)
+  SID=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('session_id','')[:8])" 2&gt;/dev/null)
+fi
+
+if [ "$EVT" = "PostToolUse" ]; then
+  KIND="tool"; DETAIL="$TOOL"
+else
+  KIND="claude-stop"; DETAIL="session $SID"
+fi
+
+curl -s -m 3 -X POST "$OPS_API_BASE/events" \
+  -H "Content-Type: application/json" \
+  -d "{\"kind\":\"$KIND\",\"detail\":\"$DETAIL\",\"turns\":0,\"cost_usd\":0}" \
+  &gt;/dev/null 2&gt;&amp;1 || true
+exit 0
+OPSEOF
+chmod +x .claude/hooks/ops-report.sh</code></pre>
+  </div>
+
+  <div class="step-title"><span class="step-no">2</span>settings에 등록</div>
+  <div class="code-wrap prompt">
+    <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>.claude/settings.json에 hooks를 추가해줘. PostToolUse는 matcher "Bash|Edit|Write|Read|Grep|Glob", Stop은 matcher 없이, 둘 다 command는 "$CLAUDE_PROJECT_DIR/.claude/hooks/ops-report.sh" 하나씩이야. 기존 설정은 유지해.</code></pre>
+  </div>
+
+  <div class="step-title"><span class="step-no">3</span>루프 점화</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>export OPS_API_BASE="$API"
+claude</code></pre>
+  </div>
+  <div class="code-wrap prompt">
+    <div class="code-head"><span class="code-label">Claude 세션 입력, 아무 작업이나</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>README.md에 이 프로젝트 한 줄 소개를 추가해줘</code></pre>
+  </div>
+  <p class="body">
+    브라우저 대시보드를 옆에 두고 위 프롬프트를 실행하세요. <strong>Edit, Bash 같은 tool 이벤트와
+    claude-stop 펄스가 5초 안에 피드에 등장</strong>합니다. 이 순간부터 여러분이 치는 모든 턴이
+    여러분이 만든 서비스에 기록됩니다. 여러분만의 관측 루프가 조용히 돌기 시작했습니다.
+  </p>
+
+  <div class="step-title"><span class="step-no">4</span>비용 차트 채우기 + /ship 스킬</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>cat &gt; ops-track.sh &lt;&lt; 'TRKEOF'
+#!/bin/bash
+# 사용: ./ops-track.sh "프롬프트" - 헤드리스 실행 결과와 비용을 Ops Center에 기록
+set -euo pipefail
+Q="${1:?Usage: ./ops-track.sh \"프롬프트\"}"
+
+OUT=$(claude -p "$Q" --output-format json)
+echo "$OUT" | jq -r '.result'
+
+COST=$(echo "$OUT" | jq -r '.total_cost_usd // 0')
+TURNS=$(echo "$OUT" | jq -r '.num_turns // 0')
+DETAIL=$(printf '%s' "$Q" | head -c 60 | tr '"' "'")
+
+curl -s -m 3 -X POST "${OPS_API_BASE:?OPS_API_BASE 필요}/events" \
+  -H "Content-Type: application/json" \
+  -d "{\"kind\":\"headless\",\"detail\":\"$DETAIL\",\"turns\":$TURNS,\"cost_usd\":$COST}" \
+  &gt;/dev/null &amp;&amp; echo "[ops] 기록됨: \$$COST, ${TURNS} turns"
+TRKEOF
+chmod +x ops-track.sh
+./ops-track.sh "이 프로젝트 아키텍처를 한 문장으로 요약해줘"</code></pre>
+  </div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, /ship 스킬 설치</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>mkdir -p .claude/skills/ship
+cat &gt; .claude/skills/ship/SKILL.md &lt;&lt; 'SHIPEOF'
+---
+description: 캡스톤 원커맨드 배포. synth 검증, deploy, smoke 테스트, 개장 보고까지 수행한다.
+disable-model-invocation: true
+argument-hint: "[참가자이름]"
+allowed-tools: Bash(npx cdk *) Bash(curl *) Bash(aws cloudformation *)
+---
+
+캡스톤 스택을 출항시키세요. 참가자 이름: $ARGUMENTS
+
+1. `npx cdk synth --quiet` 로 합성 검증. 실패하면 원인만 보고하고 멈추세요.
+2. `set -a; source ~/capstone/.env; set +a &amp;&amp; npx cdk deploy --require-approval never --outputs-file cdk-outputs.json` 실행 (Bearer 키 로드 포함).
+3. cdk-outputs.json에서 ApiUrl과 SiteUrl을 읽으세요.
+4. Smoke 테스트: `curl -s $ApiUrl/events` 가 JSON을 반환하고, `curl -s -X POST $ApiUrl/events -H "Content-Type: application/json" -d '{"kind":"ship","detail":"smoke"}'` 가 201을 반환해야 합니다.
+5. 최종 보고: SiteUrl, ApiUrl, smoke 결과를 표로 출력하고, 셀프 방문에 쓸 두 URL(SiteUrl, ApiUrl)을 한 줄로 안내하세요.
+SHIPEOF
+echo "스킬 설치됨. 새 세션에서 /ship 사용 가능"</code></pre>
+  </div>
+  <div class="callout tip">
+    <span class="co-title">왜 비용은 Hook이 아니라 헤드리스로 채우나</span>
+    Stop hook의 stdin에는 비용 필드가 없습니다. 검증 가능한 필드(session_id, tool_name)는 Hook으로 피드를 만들고,
+    비용/턴은 헤드리스 결과 JSON(total_cost_usd, num_turns)에서 가져오는 것이 정직한 설계입니다. Chapter 5 Task 1의 재활용입니다.
+  </div>
+
+  <div class="checkpoint dod">
+    <div class="cp-title">DEFINITION OF DONE</div>
+    <label class="cp-item"><input type="checkbox" data-cp="m4a"><span>프롬프트 한 번에 tool 이벤트와 claude-stop이 대시보드 피드에 실시간 표시된다</span></label>
+    <label class="cp-item"><input type="checkbox" data-cp="m4b"><span>ops-track 실행으로 비용 막대가 1개 이상 생겼고 /ship 스킬이 목록에 보인다</span></label>
+  </div>
+</section>
+<!-- ================= M5 ================= -->
+<section class="task mission" id="m5">
+  <div class="task-head">
+    <span class="task-num">MISSION 05</span>
+    <h2>착륙, 원커맨드 재배포와 셀프 검증</h2>
+    <span class="time-badge">15분</span>
+  </div>
+  <p class="task-goal">
+    <code class="inline">/ship</code> 한 번으로 synth → deploy → smoke까지 완주한 뒤,
+    이번에는 <strong>여러분이 첫 손님</strong>이 됩니다. 터미널에서 내 옵스 센터에 방문 이벤트를 남기고,
+    대시보드 피드에 방명록이 실시간으로 떠오르는 순간이 착륙 신호입니다.
+  </p>
+
+  <div class="step-title"><span class="step-no">1</span>출항</div>
+  <div class="code-wrap prompt">
+    <div class="code-head"><span class="code-label">Claude 세션 입력 (새 세션, 본인 이름으로)</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>/ship 홍길동</code></pre>
+  </div>
+  <div class="code-wrap output">
+    <div class="code-head"><span class="code-label">기대 결과</span></div>
+    <pre><code>| 항목 | 값 |
+| SiteUrl | https://dxxxx.cloudfront.net |
+| ApiUrl | https://xxxx.execute-api.ap-northeast-2.amazonaws.com |
+| Smoke | GET 200 / POST 201 |
+셀프 방문용: https://dxxxx.cloudfront.net + ApiUrl</code></pre>
+  </div>
+
+  <div class="step-title"><span class="step-no">2</span>개장 셀프 방문, 내가 첫 손님</div>
+  <p class="body">
+    대시보드(SiteUrl)를 브라우저 한 창에 열어 두면, 터미널이 손님 역할을 합니다.
+    아래 방문 카드에서 문구를 골라 방명록을 남겨 보세요.
+  </p>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>curl -s -X POST "$API/events" -H 'Content-Type: application/json' \
+  -d '{"kind":"visit","detail":"오늘의 첫 손님입니다, 개장을 축하해요"}'</code></pre>
+  </div>
+  <p class="body">
+    3초 안에 <strong>대시보드 피드에 visit 이벤트가 떠오릅니다</strong>. 세션 안 훅이 아니라
+    외부 HTTP 손님을 여러분의 관측 루프가 기록한 첫 순간입니다.
+    SiteUrl의 /ask 패널에도 질문 한 줄을 남겨 Bedrock 응답까지 확인하면 개장 점검 끝입니다.
+  </p>
+
+  <table class="tbl">
+    <tr><th>#</th><th>방문 카드</th><th>관찰 포인트</th></tr>
+    <tr><td>1</td><td>{"kind":"visit","detail":"오늘의 첫 손님입니다"}</td><td>기본 방명록, 피드 도착 3초</td></tr>
+    <tr><td>2</td><td>{"kind":"cheer","detail":"개장 축하"}</td><td>피드가 미지의 kind를 어떻게 그리는지</td></tr>
+    <tr><td>3</td><td>SiteUrl의 /ask에 "이 시스템 아키텍처를 한 문단으로 요약해줘"</td><td>Bedrock 질의 패널 왕복</td></tr>
+  </table>
+
+  <div class="step-title"><span class="step-no">3</span>정산과 정리</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>curl -s "$API/events" | jq '.summary'        # 오늘 기록된 나의 활동/비용 합계 (방문객 포함)
+git add -A &amp;&amp; git commit -m "feat: claude ops center capstone"
+
+# 실습을 마쳤다면 비용 정리 (이어서 볼 계획이면 유지):
+# npx cdk destroy --force</code></pre>
+  </div>
+  <div class="callout tip">
+    <span class="co-title">계정 비용 추적</span>
+    스택 태그 <code class="inline">project=capstone-ops-center</code>가 걸려 있어 Cost Explorer에서 태그 필터로
+    캡스톤 비용만 분리 조회할 수 있습니다. Bedrock 호출량은 Chapter 3의 OTel 파이프라인을 붙이면 조직 단위로 확장됩니다.
+  </div>
+
+  <div class="checkpoint dod">
+    <div class="cp-title">DEFINITION OF DONE</div>
+    <label class="cp-item"><input type="checkbox" data-cp="m5"><span>터미널에서 남긴 방문 이벤트가 대시보드 피드에 3초 내 도착했다</span></label>
+  </div>
+</section>
+
+<!-- ================= OPTION 하네스 ================= -->
+<section class="task" id="opt-h">
+  <div class="task-head">
+    <span class="task-num">OPTION</span>
+    <h2>하네스 엔지니어링, 작품을 성숙시키고 등급을 받다</h2>
+    <span class="time-badge">+15분 옵션</span>
+  </div>
+  <p class="task-goal">
+    지금까지 만든 것은 <strong>결과물</strong>입니다. 이 옵션은 그 결과물을 만든 <strong>작업 환경, 즉 하네스</strong>
+    (CLAUDE.md, hooks, skills, commands, agents)를 표준 구조로 성숙시키고(project-init),
+    그 품질을 6개 차원(정확성, 안전성, 완전성, 실행 가능성, 일관성, 검증 가능성)에서
+    채점받는(harness-eval) 단계입니다. superpowers의 3단(brainstorming, writing-plans, executing-plans) 뒤에
+    <strong>4단 성숙화와 5단 평가</strong>를 붙이는 셈입니다.
+  </p>
+
+  <div class="step-title"><span class="step-no">1</span>플러그인 2종 설치</div>
+  <div class="code-wrap">
+    <div class="code-head"><span class="code-label">Terminal, 전체 복사</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>claude plugin marketplace add https://github.com/whchoi98/project-init
+claude plugin install project-init@project-init
+claude plugin marketplace add https://github.com/whchoi98/harness-eval
+claude plugin install harness-eval@harness-eval
+claude plugin list</code></pre>
+  </div>
+  <p class="body">설치 후 새 Claude 세션을 시작하세요, superpowers 때와 같은 규칙입니다.</p>
+
+  <div class="step-title"><span class="step-no">2</span>성숙화, /project-init:init-project와 /project-init:sync-docs</div>
+  <div class="code-wrap prompt">
+    <div class="code-head"><span class="code-label">Claude 세션 입력 (새 세션, worktree에서)</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>/project-init:init-project .</code></pre>
+  </div>
+  <p class="body">
+    기존 프로젝트 감지 모드로 동작합니다. 이 캡스톤에서 손으로 만든 자기관측 훅(ops-report, ops-track)과 /ship 스킬 같은 기존 하네스는 보존하고,
+    없는 것(문서 스캐폴딩, 시크릿 스캔 훅, 테스트 프레임워크, /review와 /test-all 커맨드 등)만 채웁니다.
+    CLAUDE.md가 이미 있으면 덮어쓰기 전에 물어봅니다. 끝나면 이어서:
+  </p>
+  <div class="code-wrap prompt">
+    <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>/project-init:sync-docs</code></pre>
+  </div>
+  <div class="code-wrap output">
+    <div class="code-head"><span class="code-label">출력 예시 (요약)</span></div>
+    <pre><code>## Sync Report
+### Quality Scores (Before -&gt; After)
+| ./CLAUDE.md          | C (62) | B (84) | +22 |
+| ./lambda/CLAUDE.md   | F (12) | C (58) | +46 |
+### Changes Made
+- Files created: 4 / Files updated: 2 / Runbooks missing: 1</code></pre>
+  </div>
+
+  <div class="step-title"><span class="step-no">3</span>평가, /harness-eval로 등급 받기</div>
+  <div class="code-wrap prompt">
+    <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>/harness-eval:quick</code></pre>
+  </div>
+  <div class="code-wrap output">
+    <div class="code-head"><span class="code-label">출력 예시</span></div>
+    <pre><code>{"mode": "quick", "scores": {"overall": 7.2, "grade": "B"}, "checklist": {"pass": 13, "warn": 2, "fail": 1}}</code></pre>
+  </div>
+  <p class="body">
+    여러분의 옵스 센터에는 이미 자기관측 훅과 /ship 스킬이 있습니다. 하네스의 절반을 이 캡스톤에서 손으로 만든 셈이고, 평가는 그 절반이 몇 점짜리인지 숫자로 알려줍니다. 여유가 있다면 이 캡스톤에서 실제로 내린 결정을 기록으로 남기세요:
+  </p>
+  <div class="code-wrap prompt">
+    <div class="code-head"><span class="code-label">Claude 세션 입력</span><button class="copy-btn" type="button">복사</button></div>
+    <pre><code>/add-adr bedrock-global-inference
+/add-runbook ship-and-observe</code></pre>
+  </div>
+  <div class="callout warn">
+    <span class="co-title">시간과 신뢰 가드</span>
+    잔여 시간이 빠듯하면 설치와 /harness-eval:quick(30초 체크리스트)만으로 충분합니다,
+    /project-init:init-project는 17단계라 수 분이 걸립니다. /harness-eval:standard의 동적 분석은
+    <strong>대상 프로젝트의 훅과 테스트를 실제로 실행</strong>합니다. 방금 본인이 만든 프로젝트라 안전하지만,
+    남의 저장소를 평가할 때는 --static-only 플래그가 예의이자 안전입니다.
+  </div>
+
+  <div class="checkpoint dod">
+    <div class="cp-title">OPTION DONE, 진행률 미집계</div>
+    <label class="cp-item"><input type="checkbox" data-cp="opt1"><span>/project-init:sync-docs의 Before/After 품질 점수를 확인했다</span></label>
+    <label class="cp-item"><input type="checkbox" data-cp="opt2"><span>/harness-eval:quick 등급을 받았다</span></label>
+  </div>
+</section>
+
+<!-- ================= 부록 ================= -->
+<section class="task" id="apx-b">
+  <div class="task-head">
+    <span class="task-num">APPENDIX</span>
+    <h2>컷라인과 트러블슈팅</h2>
+    <span class="time-badge">비상용</span>
+  </div>
+  <p class="task-goal">90분 경과 시점 기준으로 판단하세요. 컷은 순서대로 적용하고, 어떤 경우에도 M4의 관측 루프와 M5의 셀프 검증은 지킵니다.</p>
+
+  <table class="tbl">
+    <tr><th>컷</th><th>조치</th><th>절약</th></tr>
+    <tr><td>CUT 1</td><td>M2 프론트를 뒤로 미루고 M3까지 curl로만 진행, 프론트는 M4 전에 완성본으로 배치</td><td>~15분</td></tr>
+    <tr><td>CUT 2</td><td>M3 모델 교체 실험 생략, Sonnet 4.6 기본값 고정</td><td>~5분</td></tr>
+    <tr><td>CUT 3</td><td>M4의 ops-track/비용 차트 생략, Hook 피드만 (WoW 유지)</td><td>~7분</td></tr>
+  </table>
+
+  <div class="step-title"><span class="step-no">T</span>트러블슈팅 표</div>
+  <table class="tbl">
+    <tr><th>증상</th><th>원인</th><th>처방</th></tr>
+    <tr><td>bootstrap 실패</td><td>권한/기존 CDKToolkit 충돌</td><td>tail /tmp/bootstrap.log, 기존 스택 확인 후 재실행</td></tr>
+    <tr><td>ValidationException (on-demand)</td><td>베이스 모델 ID 사용</td><td>global. 프로파일 ID로 교체 (M3 표)</td></tr>
+    <tr><td>AccessDeniedException</td><td>모델 액세스 미승인 또는 IAM 리소스 누락</td><td>Bedrock 콘솔 승인 + foundation-model / inference-profile 2종 확인</td></tr>
+    <tr><td>/ask 30초 타임아웃</td><td>HTTP API 통합 상한</td><td>maxTokens 축소, 필요 시 ask에 Function URL 부여로 우회</td></tr>
+    <tr><td>대시보드 빈 화면</td><td>CloudFront 전파 중 또는 API_BASE 미교체</td><td>수 분 대기, index.html의 API_BASE 확인 후 재배포</td></tr>
+    <tr><td>피드에 이벤트 없음</td><td>OPS_API_BASE 미설정 상태로 claude 기동</td><td>export 후 claude 재시작, curl로 API 직접 확인</td></tr>
+    <tr><td>명령이 다른 폴더에서 실패</td><td>superpowers worktree 이동</td><td>pwd 확인, worktree 경로에서 재실행</td></tr>
+  </table>
+</section>
+
+<!-- ================= Wrap-up ================= -->
+<section class="wrapup" id="wrapup">
+  <h2>마무리, 챕터 소환 지도</h2>
+  <table class="tbl">
+    <tr><th>캡스톤 장면</th><th>소환된 챕터</th><th>핵심 역량</th></tr>
+    <tr><td>brainstorm → plan 승인</td><td>Ch1 + superpowers</td><td>계획 우선, CLAUDE.md, Plan 사고방식</td></tr>
+    <tr><td>프론트 병렬 빌드</td><td>Ch2</td><td>서브에이전트 위임과 병렬성</td></tr>
+    <tr><td>Bedrock IAM 2종 리소스, 비용 태그</td><td>Ch3</td><td>자격증명, 최소 권한, 거버넌스</td></tr>
+    <tr><td>Hook 등록, /ship 스킬</td><td>Ch4</td><td>Hooks, 커맨드 스킬, 에셋 패키징</td></tr>
+    <tr><td>curl 왕복, jq 파싱, ops-track</td><td>Ch5</td><td>헤드리스, JSON 스키마, exit 게이트</td></tr>
+  </table>
+
+  <div class="next-box">
+    <div>
+      <div class="nx-label">NEXT</div>
+      <h3>Chapter 6 - Agent SDK</h3>
+      <p>오늘 ask Lambda는 Bedrock을 한 번 호출하는 함수였습니다. Chapter 6에서는 같은 자리를 Agent SDK로 바꿔, 도구를 쓰고 멀티턴으로 일하는 에이전트 서비스로 진화시킵니다. 오늘의 스택이 그대로 실습 무대가 됩니다.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<footer>
+  <div class="who">Claude Code Deep Dive Workshop, Capstone Hands-on Lab</div>
+  <div>기준: Claude Code 2.1.x + superpowers, CDK v2, 2026.07 / 모델 ID와 리전 지원은 배포 시점에 재확인하세요</div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  document.querySelectorAll(".copy-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var pre = btn.closest(".code-wrap").querySelector("pre");
+      var text = pre.textContent.replace(/\n{3,}/g, "\n\n").trim();
+      function done() {
+        var old = btn.textContent;
+        btn.textContent = "복사됨 ✓";
+        btn.classList.add("copied");
+        setTimeout(function () { btn.textContent = old; btn.classList.remove("copied"); }, 1600);
+      }
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(done).catch(function () { fallback(); });
+      } else { fallback(); }
+      function fallback() {
+        var ta = document.createElement("textarea");
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+
+  var taskGroups = {
+    m0: ["m0a", "m0b"], m1: ["m1"], m2: ["m2"],
+    m3: ["m3a", "m3b"], m4: ["m4a", "m4b"], m5: ["m5"]
+  };
+  var state = {};
+  function refresh() {
+    var doneCount = 0;
+    Object.keys(taskGroups).forEach(function (task) {
+      var allDone = taskGroups[task].every(function (cp) { return state[cp]; });
+      if (allDone) doneCount++;
+      var seg = document.querySelector('.seg[data-task="' + task + '"]');
+      if (seg) seg.classList.toggle("done", allDone);
+      var nav = document.querySelector('.sidenav a[data-nav="' + task + '"]');
+      if (nav) nav.classList.toggle("done", allDone);
+    });
+    var pc = document.getElementById("progress-count");
+    if (pc) pc.textContent = doneCount + "/6";
+  }
+  document.querySelectorAll('.cp-item input[type="checkbox"]').forEach(function (cb) {
+    cb.addEventListener("change", function () { state[cb.dataset.cp] = cb.checked; refresh(); });
+  });
+  document.querySelectorAll(".seg").forEach(function (seg) {
+    seg.addEventListener("click", function () {
+      var el = document.getElementById(seg.dataset.task);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+  var sections = document.querySelectorAll("section[id]");
+  var navLinks = document.querySelectorAll(".sidenav a[data-nav]");
+  var segs = document.querySelectorAll(".seg[data-task]");
+  if ("IntersectionObserver" in window) {
+    var current = null;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) { if (entry.isIntersecting) current = entry.target.id; });
+      if (!current) return;
+      navLinks.forEach(function (a) { a.classList.toggle("active", a.dataset.nav === current); });
+      segs.forEach(function (s) { s.classList.toggle("active", s.dataset.task === current); });
+    }, { rootMargin: "-20% 0px -65% 0px" });
+    sections.forEach(function (s) { io.observe(s); });
+  }
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  var KEY = "hol-theme";
+  var btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "theme-toggle";
+  function apply(light) {
+    document.documentElement.classList.toggle("light", light);
+    btn.textContent = light ? "DARK" : "WHITE";
+    btn.setAttribute("aria-pressed", light ? "true" : "false");
+    btn.setAttribute("aria-label", light ? "다크 모드로 전환" : "화이트 모드로 전환");
+  }
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) { saved = null; }
+  apply(saved === "light");
+  btn.addEventListener("click", function () {
+    var next = !document.documentElement.classList.contains("light");
+    apply(next);
+    try { localStorage.setItem(KEY, next ? "light" : "dark"); } catch (e) {}
+  });
+  document.body.appendChild(btn);
+})();
+</script>
+</body>
+</html>
