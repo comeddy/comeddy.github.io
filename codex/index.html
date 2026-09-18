@@ -147,7 +147,8 @@ section{padding:74px 0;border-bottom:1px solid var(--line)}
 
 /* ── setup / code ───────────────────────────────────────── */
 .steps{display:grid;gap:18px;grid-template-columns:repeat(3,1fr)}
-.steps-2{grid-template-columns:repeat(2,1fr)}
+/* STEP 01/02 stack vertically at every width; .steps.steps-2 outranks the responsive .steps rules */
+.steps.steps-2{grid-template-columns:1fr}
 .step{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;
   box-shadow:var(--shadow-card);display:flex;flex-direction:column}
 .step-hd{padding:20px 22px 0}
@@ -329,7 +330,6 @@ footer .fine span{font-family:var(--mono)}
   #paths td.use::before{content:"B · Runtime — ";color:var(--text-3)}
   #paths td.both{margin-top:6px;font-size:13.5px;color:var(--text-2)}
   #paths td.both::before{content:"공통 — ";color:var(--text-3)}
-  #paths .steps-2,#setup .steps-2{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){
   *{animation:none !important;transition:none !important;scroll-behavior:auto !important}
