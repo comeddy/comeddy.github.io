@@ -273,8 +273,9 @@ td.use{color:var(--text)}
 .cta h2{font-size:clamp(26px,3.4vw,40px);letter-spacing:-.02em}
 .cta h2 em{font-family:var(--serif);font-style:normal;font-weight:700;color:var(--accent-ink)}
 .cta p{margin:18px auto 0;color:var(--text-2);font-size:16.5px}
-.cta .code{margin:30px auto 0;text-align:left;border-radius:14px;border:1px solid var(--code-line);
-  max-width:640px}
+.cta-steps{max-width:640px;margin:30px auto 0;text-align:left}
+.cta .step .code{border-radius:0;border:0;border-top:1px solid var(--code-line)}
+.cta .step-hd p{margin:8px 0 0;font-size:14px}  /* undo .cta p sizing inside the cards */
 .cta-btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:28px}
 
 /* ── footer ─────────────────────────────────────────────── */
@@ -847,13 +848,19 @@ region = "us-west-2"'>복사</button><code><span class="c"># ~/.codex/config.tom
   <div class="wrap">
     <div class="cta-in">
       <h2>붙이는 데 필요한 건 <em>네 줄</em>입니다</h2>
-      <p>공통 부분을 붙여 넣고, <code style="font-family:var(--mono);font-size:.9em">config.toml</code>에서
-      두 경로 중 하나만 남기세요.</p>
+      <p>경로별로 화면 하나씩입니다. 셸 부분은 두 경로가 같고,
+      <code style="font-family:var(--mono);font-size:.9em">config.toml</code> 두 줄만 다릅니다. 둘 중 하나만 고르세요.</p>
     </div>
-    <pre class="code"><button class="copy" type="button" data-copy='npm install -g @openai/codex
-export AWS_PROFILE="<your-aws-profile>"
-export AWS_REGION=us-west-2
-codex'>공통 복사</button><code>npm install -g @openai/codex
+    <div class="steps steps-2 cta-steps">
+      <div class="step">
+        <div class="step-hd">
+          <div class="step-n">화면 1 · 경로 A</div>
+          <h3>Mantle 경로로 붙이기</h3>
+          <p>공급자 값 <span style="font-family:var(--mono);font-size:12.5px">amazon-bedrock</span>, 접두사 없는 모델 ID.</p>
+        </div>
+        <pre class="code"><button class="copy" type="button" data-copy='model_provider = "amazon-bedrock"
+model = "openai.gpt-6-astra"'>config.toml 복사</button><code><span class="c"># 셸 — 공통</span>
+npm install -g @openai/codex
 export AWS_PROFILE=<span class="s">"&lt;your-aws-profile&gt;"</span>
 export AWS_REGION=us-west-2
 
@@ -861,11 +868,28 @@ export AWS_REGION=us-west-2
 <span class="k">model_provider</span> = <span class="s">"amazon-bedrock"</span>
 <span class="k">model</span> = <span class="s">"openai.gpt-6-astra"</span>
 
+codex        <span class="c"># /status → Model provider: Amazon Bedrock</span></code></pre>
+      </div>
+
+      <div class="step">
+        <div class="step-hd">
+          <div class="step-n">화면 2 · 경로 B</div>
+          <h3>Bedrock Runtime 경로로 붙이기</h3>
+          <p>공급자 값 <span style="font-family:var(--mono);font-size:12.5px">amazon-bedrock-runtime</span>, <span style="font-family:var(--mono);font-size:12.5px">global.</span> 접두사 모델 ID.</p>
+        </div>
+        <pre class="code"><button class="copy" type="button" data-copy='model_provider = "amazon-bedrock-runtime"
+model = "global.openai.gpt-6-astra"'>config.toml 복사</button><code><span class="c"># 셸 — 공통</span>
+npm install -g @openai/codex
+export AWS_PROFILE=<span class="s">"&lt;your-aws-profile&gt;"</span>
+export AWS_REGION=us-west-2
+
 <span class="c"># ~/.codex/config.toml — 경로 B · Bedrock Runtime</span>
 <span class="k">model_provider</span> = <span class="s">"amazon-bedrock-runtime"</span>
 <span class="k">model</span> = <span class="s">"global.openai.gpt-6-astra"</span>
 
-codex        <span class="c"># 실행 후 /status 로 공급자 확인</span></code></pre>
+codex        <span class="c"># /status → Model provider: Amazon Bedrock Runtime</span></code></pre>
+      </div>
+    </div>
     <div class="cta-btns">
       <a class="btn btn-primary" href="https://openai.com/ko-KR/codex/" target="_blank" rel="noopener">Codex 내려받기</a>
       <a class="btn btn-ghost" href="https://learn.chatgpt.com/docs/amazon-bedrock" target="_blank" rel="noopener">Bedrock 설정 문서</a>
