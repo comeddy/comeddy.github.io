@@ -200,7 +200,8 @@ section{padding:74px 0;border-bottom:1px solid var(--line)}
 .rbadge.a{color:var(--accent-ink);border-color:var(--accent-100);background:var(--accent-50)}
 
 /* ── screenshots ────────────────────────────────────────── */
-.shots{display:grid;gap:22px;grid-template-columns:repeat(2,1fr)}
+/* terminal shots stack vertically at every width, same as the setup steps */
+.shots{display:grid;gap:22px;grid-template-columns:1fr}
 .shot{background:var(--code-bg);border:1px solid var(--line-2);border-radius:14px;overflow:hidden;
   box-shadow:var(--shadow-card);margin:0}
 .shot-scroll{overflow-x:auto;background:var(--code-bg)}
